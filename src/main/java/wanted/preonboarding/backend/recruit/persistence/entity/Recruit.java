@@ -1,6 +1,7 @@
 package wanted.preonboarding.backend.recruit.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 
 @Entity
@@ -25,4 +26,13 @@ public class Recruit {
 
     @Column(nullable = false, length = 500)
     private String skills;
+
+    @Builder
+    public Recruit(Company company, String position, Long compensationFee, String details, String skills) {
+        this.company = company;
+        this.position = position;
+        this.compensationFee = compensationFee;
+        this.details = details;
+        this.skills = skills;
+    }
 }
