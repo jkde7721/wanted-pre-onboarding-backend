@@ -2,8 +2,10 @@ package wanted.preonboarding.backend.recruit.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 
+@Getter
 @Entity
 public class Recruit {
 

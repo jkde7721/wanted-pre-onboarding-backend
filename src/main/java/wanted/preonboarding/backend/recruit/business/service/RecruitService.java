@@ -17,9 +17,9 @@ public class RecruitService {
     private final RecruitRepository recruitRepository;
 
     @Transactional
-    public void registerRecruit(Long companyId, RecruitSaveRequest recruitSaveRequest) {
+    public Long registerRecruit(Long companyId, RecruitSaveRequest recruitSaveRequest) {
         Company company = companyService.getCompany(companyId);
         Recruit recruit = recruitSaveRequest.toEntity(company);
-        recruitRepository.save(recruit);
+        return recruitRepository.save(recruit).getId();
     }
 }
