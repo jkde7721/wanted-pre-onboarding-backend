@@ -6,9 +6,13 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wanted.preonboarding.backend.company.business.service.CompanyService;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
+import wanted.preonboarding.backend.exception.BusinessException;
+import wanted.preonboarding.backend.exception.ErrorCode;
 import wanted.preonboarding.backend.recruit.business.dto.request.RecruitSaveRequest;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.persistence.repository.RecruitRepository;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -45,5 +49,15 @@ class RecruitServiceTest {
         assertThat(recruitId).isEqualTo(recruit.getId());
         verify(companyService, times(1)).getCompany(anyLong());
         verify(recruitRepository, times(1)).save(any(Recruit.class));
+    }
+
+    @Test
+    void getRecruitFail() {
+        Mockito.when(recruitRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> recruitService.getRecruit(1L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.RECRUIT_NOT_FOUND);
     }
 }
