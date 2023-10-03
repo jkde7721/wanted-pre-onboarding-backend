@@ -1,12 +1,12 @@
 package wanted.preonboarding.backend.recruit.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 
-@Getter
-@Builder
+@Getter @Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Recruit {
 
@@ -29,4 +29,11 @@ public class Recruit {
 
     @Column(nullable = false, length = 500)
     private String skills;
+
+    public void modify(String position, Long compensationFee, String details, String skills) {
+        this.position = position;
+        this.compensationFee = compensationFee;
+        this.details = details;
+        this.skills = skills;
+    }
 }
