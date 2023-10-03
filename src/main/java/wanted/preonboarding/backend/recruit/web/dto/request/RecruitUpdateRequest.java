@@ -1,9 +1,11 @@
 package wanted.preonboarding.backend.recruit.web.dto.request;
 
-import lombok.Getter;
+import lombok.*;
 import wanted.preonboarding.backend.recruit.business.dto.request.RecruitModifyRequest;
 
-@Getter
+@Getter @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RecruitUpdateRequest {
 
     private String position;

@@ -7,15 +7,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import wanted.preonboarding.backend.recruit.business.dto.request.RecruitSaveRequest;
+import wanted.preonboarding.backend.exception.BusinessException;
+import wanted.preonboarding.backend.recruit.business.dto.request.*;
 import wanted.preonboarding.backend.recruit.business.service.RecruitService;
-import wanted.preonboarding.backend.recruit.web.dto.request.RecruitCreateRequest;
+import wanted.preonboarding.backend.recruit.web.dto.request.*;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static wanted.preonboarding.backend.exception.ErrorCode.*;
 import static wanted.preonboarding.backend.utils.JsonUtils.asJsonString;
 
 @WebMvcTest(RecruitController.class)
@@ -40,10 +41,46 @@ class RecruitControllerTest {
         mockMvc.perform(post("/recruits")
                         .content(asJsonString(recruitCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.recruitId").value(1L))
+                .andDo(print());
+    }
+
+    @Test
+    void modifyRecruit() throws Exception {
+        RecruitUpdateRequest recruitUpdateRequest = RecruitUpdateRequest.builder()
+                .position("백엔드 시니어 개발자")
+                .compensationFee(1500000L)
+                .details("네이버에서 백엔드 시니어 개발자를 채용합니다.")
+                .skills("Spring").build();
+        mockMvc.perform(put("/recruits/{recruitId}", 1L)
+                        .content(asJsonString(recruitUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    void modifyRecruitFail() throws Exception {
+        Mockito.doThrow(new BusinessException(RECRUIT_NOT_FOUND))
+                .when(recruitService).modifyRecruit(anyLong(), any(RecruitModifyRequest.class));
+
+        RecruitUpdateRequest recruitUpdateRequest = RecruitUpdateRequest.builder()
+                .position("백엔드 시니어 개발자")
+                .compensationFee(1500000L)
+                .details("네이버에서 백엔드 시니어 개발자를 채용합니다.")
+                .skills("Spring").build();
+        mockMvc.perform(put("/recruits/{recruitId}", 1L)
+                        .content(asJsonString(recruitUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value(RECRUIT_NOT_FOUND.getHttpStatus().value()))
+                .andExpect(jsonPath("error").value(RECRUIT_NOT_FOUND.getHttpStatus().name()))
+                .andExpect(jsonPath("code").value(RECRUIT_NOT_FOUND.name()))
+                .andExpect(jsonPath("message").value(RECRUIT_NOT_FOUND.getMessage()))
                 .andDo(print());
     }
 }
