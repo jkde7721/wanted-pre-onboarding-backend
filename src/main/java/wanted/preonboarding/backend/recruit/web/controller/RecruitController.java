@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wanted.preonboarding.backend.recruit.business.service.RecruitService;
-import wanted.preonboarding.backend.recruit.web.dto.request.RecruitCreateRequest;
+import wanted.preonboarding.backend.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.recruit.web.dto.response.RecruitCreateResponse;
 
 @RequiredArgsConstructor
@@ -20,5 +20,11 @@ public class RecruitController {
         Long recruitId = recruitService.registerRecruit(recruitCreateRequest.getCompanyId(), recruitCreateRequest.toServiceDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new RecruitCreateResponse(recruitId));
+    }
+
+    @PutMapping("/{recruitId}")
+    public void modifyRecruit(@PathVariable Long recruitId,
+                              @RequestBody RecruitUpdateRequest recruitUpdateRequest) {
+        recruitService.modifyRecruit(recruitId, recruitUpdateRequest.toServiceDto());
     }
 }
