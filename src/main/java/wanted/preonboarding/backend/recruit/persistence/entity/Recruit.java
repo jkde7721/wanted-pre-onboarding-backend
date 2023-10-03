@@ -6,6 +6,7 @@ import lombok.Getter;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 
 @Getter
+@Builder
 @Entity
 public class Recruit {
 
@@ -21,20 +22,11 @@ public class Recruit {
     private String position;
 
     @Column(nullable = false)
-    private Long compensationFee = 0L;
+    private Long compensationFee;
 
     @Column(nullable = false, length = 1000)
     private String details;
 
     @Column(nullable = false, length = 500)
     private String skills;
-
-    @Builder
-    public Recruit(Company company, String position, Long compensationFee, String details, String skills) {
-        this.company = company;
-        this.position = position;
-        this.compensationFee = compensationFee;
-        this.details = details;
-        this.skills = skills;
-    }
 }
