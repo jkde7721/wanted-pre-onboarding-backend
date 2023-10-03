@@ -1,5 +1,6 @@
 package wanted.preonboarding.backend.company.business.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ class CompanyServiceTest {
     @Mock
     CompanyRepository companyRepository;
 
+    @DisplayName("ID로 회사 조회 실패 테스트")
     @Test
     void getCompanyFail() {
         Mockito.when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());

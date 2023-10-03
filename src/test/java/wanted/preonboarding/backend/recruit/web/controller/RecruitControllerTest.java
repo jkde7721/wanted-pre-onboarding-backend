@@ -1,5 +1,6 @@
 package wanted.preonboarding.backend.recruit.web.controller;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ class RecruitControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @DisplayName("채용공고 등록 성공 테스트")
     @Test
     void registerRecruit() throws Exception {
         Mockito.when(recruitService.registerRecruit(anyLong(), any(RecruitSaveRequest.class)))
@@ -47,6 +49,7 @@ class RecruitControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("채용공고 수정 성공 테스트")
     @Test
     void modifyRecruit() throws Exception {
         RecruitUpdateRequest recruitUpdateRequest = RecruitUpdateRequest.builder()
@@ -62,6 +65,7 @@ class RecruitControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("채용공고 수정 실패 테스트 - 해당 채용공고 조회 실패")
     @Test
     void modifyRecruitFail() throws Exception {
         Mockito.doThrow(new BusinessException(RECRUIT_NOT_FOUND))
@@ -75,6 +79,31 @@ class RecruitControllerTest {
         mockMvc.perform(put("/recruits/{recruitId}", 1L)
                         .content(asJsonString(recruitUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value(RECRUIT_NOT_FOUND.getHttpStatus().value()))
+                .andExpect(jsonPath("error").value(RECRUIT_NOT_FOUND.getHttpStatus().name()))
+                .andExpect(jsonPath("code").value(RECRUIT_NOT_FOUND.name()))
+                .andExpect(jsonPath("message").value(RECRUIT_NOT_FOUND.getMessage()))
+                .andDo(print());
+    }
+
+    @DisplayName("채용공고 삭제 성공 테스트")
+    @Test
+    void removeRecruit() throws Exception {
+        mockMvc.perform(delete("/recruits/{recruitId}", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+    }
+
+    @DisplayName("채용공고 삭제 실패 테스트 - 해당 채용공고 조회 실패")
+    @Test
+    void removeRecruitFail() throws Exception {
+        Mockito.doThrow(new BusinessException(RECRUIT_NOT_FOUND))
+                .when(recruitService).removeRecruit(anyLong());
+
+        mockMvc.perform(delete("/recruits/{recruitId}", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("status").value(RECRUIT_NOT_FOUND.getHttpStatus().value()))

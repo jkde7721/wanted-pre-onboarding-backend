@@ -27,4 +27,10 @@ public class RecruitController {
                               @RequestBody RecruitUpdateRequest recruitUpdateRequest) {
         recruitService.modifyRecruit(recruitId, recruitUpdateRequest.toServiceDto());
     }
+
+    @DeleteMapping("/{recruitId}")
+    public ResponseEntity<Void> removeRecruit(@PathVariable Long recruitId) {
+        recruitService.removeRecruit(recruitId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

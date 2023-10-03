@@ -33,6 +33,12 @@ public class RecruitService {
                 recruitModifyRequest.getDetails(), recruitModifyRequest.getSkills());
     }
 
+    @Transactional
+    public void removeRecruit(Long recruitId) {
+        Recruit recruit = getRecruit(recruitId);
+        recruitRepository.delete(recruit);
+    }
+
     public Recruit getRecruit(Long recruitId) {
         return recruitRepository.findById(recruitId)
                 .orElseThrow(() -> new BusinessException(RECRUIT_NOT_FOUND));
