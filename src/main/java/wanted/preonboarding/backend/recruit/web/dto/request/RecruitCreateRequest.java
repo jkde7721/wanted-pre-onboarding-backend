@@ -1,9 +1,11 @@
 package wanted.preonboarding.backend.recruit.web.dto.request;
 
-import lombok.Getter;
+import lombok.*;
 import wanted.preonboarding.backend.recruit.business.dto.request.RecruitSaveRequest;
 
-@Getter
+@Getter @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RecruitCreateRequest {
 
     private Long companyId;
