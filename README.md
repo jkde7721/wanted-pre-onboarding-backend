@@ -26,6 +26,11 @@
 **응답** 
 
 `201 Created`
+```JSON
+{
+  "recruitId": 1
+}
+```
 
 <br/>
 
