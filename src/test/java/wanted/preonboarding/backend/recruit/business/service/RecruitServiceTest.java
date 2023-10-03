@@ -30,6 +30,7 @@ class RecruitServiceTest {
     @Mock
     RecruitRepository recruitRepository;
 
+    @DisplayName("채용공고 등록 성공 테스트")
     @Test
     void registerRecruit() {
         //given
@@ -50,6 +51,7 @@ class RecruitServiceTest {
         verify(recruitRepository, times(1)).save(any(Recruit.class));
     }
 
+    @DisplayName("채용공고 수정 성공 테스트")
     @Test
     void modifyRecruit() {
         //given
@@ -70,6 +72,7 @@ class RecruitServiceTest {
         verify(recruitRepository, times(1)).findById(anyLong());
     }
 
+    @DisplayName("채용공고 삭제 성공 테스트")
     @Test
     void removeRecruit() {
         //given
@@ -86,6 +89,7 @@ class RecruitServiceTest {
         verify(recruitRepository, times(1)).delete(recruit);
     }
 
+    @DisplayName("ID로 채용공고 조회 실패 테스트")
     @Test
     void getRecruitFail() {
         Mockito.when(recruitRepository.findById(anyLong())).thenReturn(Optional.empty());
