@@ -83,4 +83,27 @@ class RecruitControllerTest {
                 .andExpect(jsonPath("message").value(RECRUIT_NOT_FOUND.getMessage()))
                 .andDo(print());
     }
+
+    @Test
+    void removeRecruit() throws Exception {
+        mockMvc.perform(delete("/recruits/{recruitId}", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+    }
+
+    @Test
+    void removeRecruitFail() throws Exception {
+        Mockito.doThrow(new BusinessException(RECRUIT_NOT_FOUND))
+                .when(recruitService).removeRecruit(anyLong());
+
+        mockMvc.perform(delete("/recruits/{recruitId}", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("status").value(RECRUIT_NOT_FOUND.getHttpStatus().value()))
+                .andExpect(jsonPath("error").value(RECRUIT_NOT_FOUND.getHttpStatus().name()))
+                .andExpect(jsonPath("code").value(RECRUIT_NOT_FOUND.name()))
+                .andExpect(jsonPath("message").value(RECRUIT_NOT_FOUND.getMessage()))
+                .andDo(print());
+    }
 }
