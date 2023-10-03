@@ -1,9 +1,11 @@
 package wanted.preonboarding.backend.company.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 
-@Builder
+@Getter @Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Company {
 
