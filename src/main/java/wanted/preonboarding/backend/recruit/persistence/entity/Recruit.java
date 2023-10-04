@@ -2,13 +2,14 @@ package wanted.preonboarding.backend.recruit.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import wanted.preonboarding.backend.audit.BaseTimeEntity;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 
 @Getter @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Recruit {
+public class Recruit extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recruit_id", nullable = false)
