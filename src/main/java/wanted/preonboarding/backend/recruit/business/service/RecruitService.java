@@ -10,6 +10,8 @@ import wanted.preonboarding.backend.company.business.service.CompanyService;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.persistence.repository.RecruitRepository;
 
+import java.util.List;
+
 import static wanted.preonboarding.backend.exception.ErrorCode.*;
 
 @RequiredArgsConstructor
@@ -39,8 +41,14 @@ public class RecruitService {
         recruitRepository.delete(recruit);
     }
 
+    @Transactional(readOnly = true)
     public Recruit getRecruit(Long recruitId) {
         return recruitRepository.findById(recruitId)
                 .orElseThrow(() -> new BusinessException(RECRUIT_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Recruit> getRecruitList() {
+        return recruitRepository.findAllFetch();
     }
 }
