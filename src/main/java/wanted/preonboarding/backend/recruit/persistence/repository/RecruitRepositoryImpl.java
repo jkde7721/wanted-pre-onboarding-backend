@@ -17,6 +17,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
     public List<Recruit> findAllFetch() {
         return queryFactory.selectFrom(recruit)
                 .join(recruit.company).fetchJoin()
+                .orderBy(recruit.createdDate.desc(), recruit.id.desc()) //생성일, 아이디 기준 내림차순 조회 (최신순)
                 .fetch();
     }
 }
