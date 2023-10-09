@@ -1,10 +1,10 @@
 package wanted.preonboarding.backend.recruit.persistence.repository;
 
-import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListResponse;
 
 public interface RecruitRepositoryCustom {
 
-    List<Recruit> findAllFetch();
+    Page<RecruitListResponse> findAllFetch(Pageable pageable);
 }

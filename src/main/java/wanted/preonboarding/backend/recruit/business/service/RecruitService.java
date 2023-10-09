@@ -1,6 +1,8 @@
 package wanted.preonboarding.backend.recruit.business.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wanted.preonboarding.backend.exception.BusinessException;
@@ -9,8 +11,7 @@ import wanted.preonboarding.backend.company.persistence.entity.Company;
 import wanted.preonboarding.backend.company.business.service.CompanyService;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.persistence.repository.RecruitRepository;
-
-import java.util.List;
+import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListResponse;
 
 import static wanted.preonboarding.backend.exception.ErrorCode.*;
 
@@ -48,7 +49,7 @@ public class RecruitService {
     }
 
     @Transactional(readOnly = true)
-    public List<Recruit> getRecruitList() {
-        return recruitRepository.findAllFetch();
+    public Page<RecruitListResponse> getRecruitList(Pageable pageable) {
+        return recruitRepository.findAllFetch(pageable);
     }
 }
