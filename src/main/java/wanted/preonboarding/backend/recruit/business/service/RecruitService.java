@@ -9,9 +9,12 @@ import wanted.preonboarding.backend.exception.BusinessException;
 import wanted.preonboarding.backend.recruit.business.dto.request.*;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 import wanted.preonboarding.backend.company.business.service.CompanyService;
+import wanted.preonboarding.backend.recruit.business.dto.response.RecruitWithAnotherResponse;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.persistence.repository.RecruitRepository;
 import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListResponse;
+
+import java.util.List;
 
 import static wanted.preonboarding.backend.exception.ErrorCode.*;
 
@@ -51,5 +54,13 @@ public class RecruitService {
     @Transactional(readOnly = true)
     public Page<RecruitListResponse> getRecruitList(Pageable pageable) {
         return recruitRepository.findAllFetch(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public RecruitWithAnotherResponse getRecruitWithAnotherOfTheCompany(Long recruitId) {
+        Recruit recruit = recruitRepository.findByIdFetch(recruitId)
+                .orElseThrow(() -> new BusinessException(RECRUIT_NOT_FOUND));
+        List<Recruit> anotherRecruitList = recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(recruit.getCompany().getId(), recruitId);
+        return new RecruitWithAnotherResponse(recruit, anotherRecruitList);
     }
 }
