@@ -44,4 +44,12 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
                 .where(recruit.id.eq(recruitId))
                 .fetchOne());
     }
+
+    @Override
+    public List<Recruit> findByCompanyNotEqualRecruitOrderByLatest(Long companyId, Long recruitId) {
+        return queryFactory.selectFrom(recruit)
+                .where(recruit.company.id.eq(companyId), recruit.id.ne(recruitId))
+                .orderBy(recruit.createdDate.desc(), recruit.id.desc())
+                .fetch();
+    }
 }
