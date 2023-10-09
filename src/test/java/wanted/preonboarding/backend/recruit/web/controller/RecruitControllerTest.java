@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 import wanted.preonboarding.backend.exception.BusinessException;
 import wanted.preonboarding.backend.recruit.business.dto.request.*;
+import wanted.preonboarding.backend.recruit.business.dto.response.RecruitWithAnotherResponse;
 import wanted.preonboarding.backend.recruit.business.service.RecruitService;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.web.dto.request.*;
@@ -160,6 +161,78 @@ class RecruitControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty())
+                .andDo(print());
+    }
+
+    @DisplayName("채용공고 상세 조회 성공 테스트 - 해당 회사의 다른 채용공고 1개 이상")
+    @Test
+    void getRecruitWithAnotherOfTheCompany() throws Exception {
+        Company company = Company.builder().id(1L).name("원티드랩").nation("한국").region("서울").build();
+        Recruit recruit1 = Recruit.builder().id(1L).company(company)
+                .position("백엔드 주니어 개발자").compensationFee(1000000L)
+                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
+        Recruit recruit2 = Recruit.builder().id(2L).company(company)
+                .position("백엔드 시니어 개발자").compensationFee(1500000L)
+                .details("원티드랩에서 백엔드 시니어 개발자를 채용합니다.").skills("Spring").build();
+        Recruit recruit3 = Recruit.builder().id(3L).company(company)
+                .position("프론트엔드 시니어 개발자").compensationFee(1500000L)
+                .details("네이버에서 프론트엔드 시니어 개발자를 채용합니다.").skills("React").build();
+        RecruitWithAnotherResponse recruitWithAnother = new RecruitWithAnotherResponse(recruit1, List.of(recruit2, recruit3));
+        Mockito.when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenReturn(recruitWithAnother);
+
+        mockMvc.perform(get("/recruits/{recruitId}", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recruitId").value(recruit1.getId()))
+                .andExpect(jsonPath("$.companyName").value(company.getName()))
+                .andExpect(jsonPath("$.nation").value(company.getNation()))
+                .andExpect(jsonPath("$.region").value(company.getRegion()))
+                .andExpect(jsonPath("$.position").value(recruit1.getPosition()))
+                .andExpect(jsonPath("$.compensationFee").value(recruit1.getCompensationFee()))
+                .andExpect(jsonPath("$.skills").value(recruit1.getSkills()))
+                .andExpect(jsonPath("$.details").value(recruit1.getDetails()))
+                .andExpect(jsonPath("$.anotherRecruitList[0]").value(recruit2.getId()))
+                .andExpect(jsonPath("$.anotherRecruitList[1]").value(recruit3.getId()))
+                .andDo(print());
+    }
+
+    @DisplayName("채용공고 상세 조회 성공 테스트 - 해당 회사의 다른 채용공고 0개")
+    @Test
+    void getRecruitWithAnotherOfTheCompanyWithZeroAnother() throws Exception {
+        Company company = Company.builder().id(1L).name("원티드랩").nation("한국").region("서울").build();
+        Recruit recruit = Recruit.builder().id(1L).company(company)
+                .position("백엔드 주니어 개발자").compensationFee(1000000L)
+                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
+        RecruitWithAnotherResponse recruitWithAnother = new RecruitWithAnotherResponse(recruit, List.of());
+        Mockito.when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenReturn(recruitWithAnother);
+
+        mockMvc.perform(get("/recruits/{recruitId}", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recruitId").value(recruit.getId()))
+                .andExpect(jsonPath("$.companyName").value(company.getName()))
+                .andExpect(jsonPath("$.nation").value(company.getNation()))
+                .andExpect(jsonPath("$.region").value(company.getRegion()))
+                .andExpect(jsonPath("$.position").value(recruit.getPosition()))
+                .andExpect(jsonPath("$.compensationFee").value(recruit.getCompensationFee()))
+                .andExpect(jsonPath("$.skills").value(recruit.getSkills()))
+                .andExpect(jsonPath("$.details").value(recruit.getDetails()))
+                .andExpect(jsonPath("$.anotherRecruitList").isEmpty())
+                .andDo(print());
+    }
+
+    @DisplayName("채용공고 상세 조회 실패 테스트 - 해당 채용공고 조회 실패")
+    @Test
+    void getRecruitWithAnotherOfTheCompanyFail() throws Exception {
+        Mockito.when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenThrow(new BusinessException(RECRUIT_NOT_FOUND));
+
+        mockMvc.perform(get("/recruits/{recruitId}", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(RECRUIT_NOT_FOUND.getHttpStatus().value()))
+                .andExpect(jsonPath("$.error").value(RECRUIT_NOT_FOUND.getHttpStatus().name()))
+                .andExpect(jsonPath("$.code").value(RECRUIT_NOT_FOUND.name()))
+                .andExpect(jsonPath("$.message").value(RECRUIT_NOT_FOUND.getMessage()))
                 .andDo(print());
     }
 }
