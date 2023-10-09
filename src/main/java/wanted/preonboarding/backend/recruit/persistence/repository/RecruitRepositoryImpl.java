@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.querydsl.core.types.Projections.*;
 import static wanted.preonboarding.backend.company.persistence.entity.QCompany.*;
@@ -33,5 +35,13 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
                 .fetch();
         Long total = queryFactory.select(recruit.count()).from(recruit).fetchOne();
         return new PageImpl<>(recruitList, pageable, total == null ? 0 : total);
+    }
+
+    @Override
+    public Optional<Recruit> findByIdFetch(Long recruitId) {
+        return Optional.ofNullable(queryFactory.selectFrom(recruit)
+                .join(recruit.company).fetchJoin()
+                .where(recruit.id.eq(recruitId))
+                .fetchOne());
     }
 }
