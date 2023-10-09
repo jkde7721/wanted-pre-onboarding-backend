@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wanted.preonboarding.backend.recruit.business.dto.response.RecruitWithAnotherResponse;
 import wanted.preonboarding.backend.recruit.business.service.RecruitService;
 import wanted.preonboarding.backend.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.recruit.web.dto.response.*;
@@ -39,5 +40,11 @@ public class RecruitController {
     @GetMapping
     public Page<RecruitListResponse> getRecruitList(Pageable pageable) {
         return recruitService.getRecruitList(pageable);
+    }
+
+    @GetMapping("/{recruitId}")
+    public RecruitResponse getRecruitWithAnotherOfTheCompany(@PathVariable Long recruitId) {
+        RecruitWithAnotherResponse recruitWithAnother = recruitService.getRecruitWithAnotherOfTheCompany(recruitId);
+        return RecruitResponse.of(recruitWithAnother);
     }
 }
