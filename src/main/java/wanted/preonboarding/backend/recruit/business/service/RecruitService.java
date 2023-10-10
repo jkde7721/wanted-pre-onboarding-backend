@@ -63,4 +63,9 @@ public class RecruitService {
         List<Recruit> anotherRecruitList = recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(recruit.getCompany().getId(), recruitId);
         return new RecruitWithAnotherResponse(recruit, anotherRecruitList);
     }
+
+    @Transactional(readOnly = true)
+    public List<Recruit> searchRecruitListBy(String query) {
+        return recruitRepository.findByQueryFetch(query);
+    }
 }
