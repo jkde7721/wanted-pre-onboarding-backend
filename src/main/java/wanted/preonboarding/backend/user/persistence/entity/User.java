@@ -1,8 +1,12 @@
 package wanted.preonboarding.backend.user.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import wanted.preonboarding.backend.audit.BaseTimeEntity;
 
+@Getter @Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class User extends BaseTimeEntity {
 
