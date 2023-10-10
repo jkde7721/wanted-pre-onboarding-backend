@@ -13,4 +13,5 @@ public interface RecruitRepositoryCustom {
     Page<RecruitListResponse> findAllFetch(Pageable pageable);
     Optional<Recruit> findByIdFetch(Long recruitId);
     List<Recruit> findByCompanyNotEqualRecruitOrderByLatest(Long companyId, Long recruitId);
+    List<Recruit> findByQueryFetch(String query);
 }

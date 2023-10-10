@@ -52,4 +52,16 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
                 .orderBy(recruit.createdDate.desc(), recruit.id.desc())
                 .fetch();
     }
+
+    @Override
+    public List<Recruit> findByQueryFetch(String query) {
+        //TODO: 쿼리 최적화 하기 (like '%query%' 쿼리 발생)
+        return queryFactory.selectFrom(recruit)
+                .join(recruit.company, company).fetchJoin()
+                .where(recruit.position.containsIgnoreCase(query).or(
+                        recruit.skills.containsIgnoreCase(query)).or(
+                        company.name.containsIgnoreCase(query)))
+                .orderBy(recruit.createdDate.desc(), recruit.id.desc())
+                .fetch();
+    }
 }
