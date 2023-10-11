@@ -6,23 +6,17 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wanted.preonboarding.backend.domain.company.business.service.CompanyService;
 import wanted.preonboarding.backend.domain.company.persistence.entity.Company;
-import wanted.preonboarding.backend.domain.recruit.business.dto.request.RecruitModifyRequest;
-import wanted.preonboarding.backend.domain.recruit.business.dto.request.RecruitSaveRequest;
-import wanted.preonboarding.backend.domain.recruit.business.service.RecruitService;
-import wanted.preonboarding.backend.exception.*;
-import wanted.preonboarding.backend.domain.recruit.business.dto.response.RecruitWithAnotherResponse;
+import wanted.preonboarding.backend.domain.recruit.business.dto.request.*;
+import wanted.preonboarding.backend.domain.recruit.business.dto.response.*;
 import wanted.preonboarding.backend.domain.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.domain.recruit.persistence.repository.RecruitRepository;
-import wanted.preonboarding.backend.global.exception.BusinessException;
-import wanted.preonboarding.backend.global.exception.ErrorCode;
+import wanted.preonboarding.backend.global.exception.*;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RecruitServiceTest {
@@ -44,8 +38,8 @@ class RecruitServiceTest {
         Recruit recruit = Recruit.builder().id(1L).company(company)
                 .position("백엔드 주니어 개발자").compensationFee(1000000L)
                 .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..").skills("Python").build();
-        Mockito.when(companyService.getCompany(anyLong())).thenReturn(company);
-        Mockito.when(recruitRepository.save(any(Recruit.class))).thenReturn(recruit);
+        when(companyService.getCompany(anyLong())).thenReturn(company);
+        when(recruitRepository.save(any(Recruit.class))).thenReturn(recruit);
 
         //when
         RecruitSaveRequest recruitSaveRequest = new RecruitSaveRequest("백엔드 주니어 개발자", 1000000L, "원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..", "Python");
@@ -65,7 +59,7 @@ class RecruitServiceTest {
         Recruit recruit = Recruit.builder().id(1L).company(company)
                 .position("백엔드 주니어 개발자").compensationFee(1000000L)
                 .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..").skills("Python").build();
-        Mockito.when(recruitRepository.findById(anyLong())).thenReturn(Optional.of(recruit));
+        when(recruitRepository.findById(anyLong())).thenReturn(Optional.of(recruit));
 
         //when
         RecruitModifyRequest recruitModifyRequest = new RecruitModifyRequest("백엔드 시니어 개발자", 1500000L, "네이버에서 백엔드 시니어 개발자를 채용합니다.", "Spring");
@@ -86,7 +80,7 @@ class RecruitServiceTest {
         Recruit recruit = Recruit.builder().id(1L).company(company)
                 .position("백엔드 주니어 개발자").compensationFee(1000000L)
                 .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..").skills("Python").build();
-        Mockito.when(recruitRepository.findById(anyLong())).thenReturn(Optional.of(recruit));
+        when(recruitRepository.findById(anyLong())).thenReturn(Optional.of(recruit));
 
         //when
         recruitService.removeRecruit(1L);
@@ -98,7 +92,7 @@ class RecruitServiceTest {
     @DisplayName("ID로 채용공고 조회 실패 테스트")
     @Test
     void getRecruitFail() {
-        Mockito.when(recruitRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(recruitRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> recruitService.getRecruit(1L))
                 .isInstanceOf(BusinessException.class)
@@ -120,8 +114,8 @@ class RecruitServiceTest {
         Recruit recruit3 = Recruit.builder().id(3L).company(company)
                 .position("프론트엔드 시니어 개발자").compensationFee(1500000L)
                 .details("네이버에서 프론트엔드 시니어 개발자를 채용합니다.").skills("React").build();
-        Mockito.when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.of(recruit1));
-        Mockito.when(recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(anyLong(), anyLong())).thenReturn(List.of(recruit2, recruit3));
+        when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.of(recruit1));
+        when(recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(anyLong(), anyLong())).thenReturn(List.of(recruit2, recruit3));
 
         //when
         RecruitWithAnotherResponse recruitWithAnother = recruitService.getRecruitWithAnotherOfTheCompany(1L);
@@ -142,8 +136,8 @@ class RecruitServiceTest {
         Recruit recruit = Recruit.builder().id(1L).company(company)
                 .position("백엔드 주니어 개발자").compensationFee(1000000L)
                 .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
-        Mockito.when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.of(recruit));
-        Mockito.when(recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(anyLong(), anyLong())).thenReturn(List.of());
+        when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.of(recruit));
+        when(recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(anyLong(), anyLong())).thenReturn(List.of());
 
         //when
         RecruitWithAnotherResponse recruitWithAnother = recruitService.getRecruitWithAnotherOfTheCompany(1L);
@@ -159,7 +153,7 @@ class RecruitServiceTest {
     @Test
     void getRecruitWithAnotherOfTheCompanyFail() {
         //given
-        Mockito.when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.empty());
+        when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.empty());
 
         //when, then
         assertThatThrownBy(() -> recruitService.getRecruitWithAnotherOfTheCompany(1L))

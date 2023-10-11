@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wanted.preonboarding.backend.domain.apply.business.service.ApplyService;
 import wanted.preonboarding.backend.domain.apply.persistence.entity.Apply;
 import wanted.preonboarding.backend.domain.apply.persistence.repository.ApplyRepository;
 import wanted.preonboarding.backend.global.exception.BusinessException;

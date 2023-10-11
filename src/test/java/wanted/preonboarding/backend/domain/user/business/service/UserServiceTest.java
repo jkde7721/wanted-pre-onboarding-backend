@@ -3,12 +3,9 @@ package wanted.preonboarding.backend.domain.user.business.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import wanted.preonboarding.backend.domain.user.business.service.UserService;
-import wanted.preonboarding.backend.global.exception.BusinessException;
-import wanted.preonboarding.backend.global.exception.ErrorCode;
+import wanted.preonboarding.backend.global.exception.*;
 import wanted.preonboarding.backend.domain.user.persistence.entity.User;
 import wanted.preonboarding.backend.domain.user.persistence.repository.UserRepository;
 

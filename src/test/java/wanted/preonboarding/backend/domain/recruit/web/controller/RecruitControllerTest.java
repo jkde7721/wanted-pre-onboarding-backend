@@ -4,31 +4,27 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import wanted.preonboarding.backend.domain.company.persistence.entity.Company;
-import wanted.preonboarding.backend.domain.recruit.business.dto.request.RecruitModifyRequest;
-import wanted.preonboarding.backend.domain.recruit.business.dto.request.RecruitSaveRequest;
-import wanted.preonboarding.backend.domain.recruit.web.controller.RecruitController;
-import wanted.preonboarding.backend.domain.recruit.web.dto.request.RecruitCreateRequest;
-import wanted.preonboarding.backend.domain.recruit.web.dto.request.RecruitUpdateRequest;
+import wanted.preonboarding.backend.domain.recruit.business.dto.request.*;
+import wanted.preonboarding.backend.domain.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.global.exception.BusinessException;
-import wanted.preonboarding.backend.domain.recruit.business.dto.response.RecruitWithAnotherResponse;
+import wanted.preonboarding.backend.domain.recruit.business.dto.response.*;
 import wanted.preonboarding.backend.domain.recruit.business.service.RecruitService;
 import wanted.preonboarding.backend.domain.recruit.persistence.entity.Recruit;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static wanted.preonboarding.backend.global.exception.ErrorCode.*;
-import static wanted.preonboarding.backend.utils.JsonUtils.asJsonString;
+import static wanted.preonboarding.backend.utils.JsonUtils.*;
 
 @WebMvcTest(RecruitController.class)
 class RecruitControllerTest {
@@ -42,7 +38,7 @@ class RecruitControllerTest {
     @DisplayName("채용공고 등록 성공 테스트")
     @Test
     void registerRecruit() throws Exception {
-        Mockito.when(recruitService.registerRecruit(anyLong(), any(RecruitSaveRequest.class)))
+        when(recruitService.registerRecruit(anyLong(), any(RecruitSaveRequest.class)))
                 .thenReturn(1L);
 
         RecruitCreateRequest recruitCreateRequest = RecruitCreateRequest.builder().companyId(1L)
@@ -78,7 +74,7 @@ class RecruitControllerTest {
     @DisplayName("채용공고 수정 실패 테스트 - 해당 채용공고 조회 실패")
     @Test
     void modifyRecruitFail() throws Exception {
-        Mockito.doThrow(new BusinessException(RECRUIT_NOT_FOUND))
+        doThrow(new BusinessException(RECRUIT_NOT_FOUND))
                 .when(recruitService).modifyRecruit(anyLong(), any(RecruitModifyRequest.class));
 
         RecruitUpdateRequest recruitUpdateRequest = RecruitUpdateRequest.builder()
@@ -110,7 +106,7 @@ class RecruitControllerTest {
     @DisplayName("채용공고 삭제 실패 테스트 - 해당 채용공고 조회 실패")
     @Test
     void removeRecruitFail() throws Exception {
-        Mockito.doThrow(new BusinessException(RECRUIT_NOT_FOUND))
+        doThrow(new BusinessException(RECRUIT_NOT_FOUND))
                 .when(recruitService).removeRecruit(anyLong());
 
         mockMvc.perform(delete("/recruits/{recruitId}", 1L)
@@ -138,7 +134,7 @@ class RecruitControllerTest {
         Recruit recruit3 = Recruit.builder().id(3L).company(company2)
                 .position("프론트엔드 시니어 개발자").compensationFee(1500000L)
                 .details("네이버에서 프론트엔드 시니어 개발자를 채용합니다.").skills("React").build();
-//        Mockito.when(recruitService.getRecruitList()).thenReturn(List.of(recruit1, recruit2, recruit3));
+//        when(recruitService.getRecruitList()).thenReturn(List.of(recruit1, recruit2, recruit3));
 
         mockMvc.perform(get("/recruits")
                         .accept(MediaType.APPLICATION_JSON))
@@ -158,7 +154,7 @@ class RecruitControllerTest {
     @DisplayName("채용공고 목록 조회 성공 테스트 - 채용공고 0개")
     @Test
     void getRecruitListNone() throws Exception {
-//        Mockito.when(recruitService.getRecruitList()).thenReturn(List.of());
+//        when(recruitService.getRecruitList()).thenReturn(List.of());
 
         mockMvc.perform(get("/recruits")
                         .accept(MediaType.APPLICATION_JSON))
@@ -181,7 +177,7 @@ class RecruitControllerTest {
                 .position("프론트엔드 시니어 개발자").compensationFee(1500000L)
                 .details("네이버에서 프론트엔드 시니어 개발자를 채용합니다.").skills("React").build();
         RecruitWithAnotherResponse recruitWithAnother = new RecruitWithAnotherResponse(recruit1, List.of(recruit2, recruit3));
-        Mockito.when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenReturn(recruitWithAnother);
+        when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenReturn(recruitWithAnother);
 
         mockMvc.perform(get("/recruits/{recruitId}", 1L)
                         .accept(MediaType.APPLICATION_JSON))
@@ -207,7 +203,7 @@ class RecruitControllerTest {
                 .position("백엔드 주니어 개발자").compensationFee(1000000L)
                 .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
         RecruitWithAnotherResponse recruitWithAnother = new RecruitWithAnotherResponse(recruit, List.of());
-        Mockito.when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenReturn(recruitWithAnother);
+        when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenReturn(recruitWithAnother);
 
         mockMvc.perform(get("/recruits/{recruitId}", 1L)
                         .accept(MediaType.APPLICATION_JSON))
@@ -227,7 +223,7 @@ class RecruitControllerTest {
     @DisplayName("채용공고 상세 조회 실패 테스트 - 해당 채용공고 조회 실패")
     @Test
     void getRecruitWithAnotherOfTheCompanyFail() throws Exception {
-        Mockito.when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenThrow(new BusinessException(RECRUIT_NOT_FOUND));
+        when(recruitService.getRecruitWithAnotherOfTheCompany(anyLong())).thenThrow(new BusinessException(RECRUIT_NOT_FOUND));
 
         mockMvc.perform(get("/recruits/{recruitId}", 1L)
                         .accept(MediaType.APPLICATION_JSON))

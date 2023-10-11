@@ -8,8 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import wanted.preonboarding.backend.domain.apply.business.service.ApplyService;
-import wanted.preonboarding.backend.domain.apply.web.controller.ApplyController;
-import wanted.preonboarding.backend.domain.apply.web.dto.request.ApplyCreateRequest;
+import wanted.preonboarding.backend.domain.apply.web.dto.request.*;
 import wanted.preonboarding.backend.global.exception.BusinessException;
 
 import static org.mockito.Mockito.*;
