@@ -307,4 +307,30 @@ Example - 2) `/recruits/search?query=Django&page=0&size=10`
 
 [Git Flow 블로그 정리](https://daeun21dev.tistory.com/25)
 
+### Git Commit Message Convention
+
+```text
+type: [#issueNumber - ]subject
+
+body(옵션)
+
+footer(옵션)
+```
+
+**Commit Type**
+- **feat**: 새로운 기능 구현
+- **add**: feat 이외의 코드 추가 및 라이브러리 추가
+- **mod**: feat 이외의 코드 수정
+- **rename**: 파일 혹은 폴더명 수정
+- **del**: 사용하지 않거나 쓸모없는 코드, 파일, 폴더 삭제
+- **fix**: 버그 및 오류 해결
+- **!BREAKING CHANGE**: 커다란 API 변경 (ex. API request, response 값의 변경, DB 테이블 변경)
+- **!HOTFIX**: 급하게 치명적인 버그를 고친 경우
+- **style**: 코드 포맷팅, 세미콜론 누락, 오타 수정, 탭 사이즈 변경
+- **refactor**: 프로덕션 코드 리팩토링 (새로운 기능 추가나 버그 수정 없이 현재 구현 개선, 변수명 변경)
+- **test**: 테스트 추가, 테스트 리팩토링 (프로덕션 코드 변경X, test 폴더 내부의 변경)
+- **design**: CSS 등 사용자 UI 디자인 변경
+- **docs**: README, WIKI 등의 문서 작성
+- **chore**: 빌드 업무, 패키지 매니저 수정
+
 <br/>
