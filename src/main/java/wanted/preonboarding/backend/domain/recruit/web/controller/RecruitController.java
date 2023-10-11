@@ -49,7 +49,7 @@ public class RecruitController {
     }
 
     @GetMapping("/search")
-    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam String query, Pageable pageable) {
+    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, Pageable pageable) {
         return recruitService.searchRecruitListBy(query, pageable);
     }
 }
