@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
-import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListResponse;
+import wanted.preonboarding.backend.recruit.web.dto.response.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,14 +54,30 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
     }
 
     @Override
-    public List<Recruit> findByQueryFetch(String query) {
+    public Page<RecruitListSearchResponse> findByQueryFetch(String query, Pageable pageable) {
         //TODO: 쿼리 최적화 하기 (like '%query%' 쿼리 발생)
-        return queryFactory.selectFrom(recruit)
-                .join(recruit.company, company).fetchJoin()
+        List<RecruitListSearchResponse> recruitList = queryFactory
+                .select(constructor(RecruitListSearchResponse.class,
+                        recruit.id, company.name, company.nation, company.region,
+                        recruit.position, recruit.compensationFee, recruit.skills
+                ))
+                .from(recruit)
+                .join(recruit.company, company)
                 .where(recruit.position.containsIgnoreCase(query).or(
                         recruit.skills.containsIgnoreCase(query)).or(
                         company.name.containsIgnoreCase(query)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .orderBy(recruit.createdDate.desc(), recruit.id.desc())
                 .fetch();
+
+        Long total = queryFactory
+                .select(recruit.count()).from(recruit)
+                .join(recruit.company, company)
+                .where(recruit.position.containsIgnoreCase(query).or(
+                        recruit.skills.containsIgnoreCase(query)).or(
+                        company.name.containsIgnoreCase(query)))
+                .fetchOne();
+        return new PageImpl<>(recruitList, pageable, total == null ? 0 : total);
     }
 }

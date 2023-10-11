@@ -8,13 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wanted.preonboarding.backend.recruit.business.dto.response.RecruitWithAnotherResponse;
 import wanted.preonboarding.backend.recruit.business.service.RecruitService;
-import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListSearchResponse;
 import wanted.preonboarding.backend.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.recruit.web.dto.response.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RequestMapping("/recruits")
@@ -54,8 +50,7 @@ public class RecruitController {
     }
 
     @GetMapping("/search")
-    public List<RecruitListSearchResponse> searchRecruitListBy(@RequestParam String query) {
-        List<Recruit> recruitList = recruitService.searchRecruitListBy(query);
-        return recruitList.stream().map(RecruitListSearchResponse::toDto).collect(Collectors.toList());
+    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam String query, Pageable pageable) {
+        return recruitService.searchRecruitListBy(query, pageable);
     }
 }

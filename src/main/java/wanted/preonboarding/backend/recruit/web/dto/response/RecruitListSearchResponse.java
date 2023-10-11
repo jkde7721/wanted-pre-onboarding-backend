@@ -1,11 +1,11 @@
 package wanted.preonboarding.backend.recruit.web.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import wanted.preonboarding.backend.company.persistence.entity.Company;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 
 @Getter @Builder
+@AllArgsConstructor
 public class RecruitListSearchResponse {
 
     private Long recruitId;
