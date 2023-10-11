@@ -2,6 +2,8 @@ package wanted.preonboarding.backend.domain.recruit.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import wanted.preonboarding.backend.global.audit.BaseTimeEntity;
 import wanted.preonboarding.backend.domain.company.persistence.entity.Company;
 
@@ -15,8 +17,9 @@ public class Recruit extends BaseTimeEntity {
     @Column(name = "recruit_id", nullable = false)
     private Long id;
 
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
+    @JoinColumn(name = "company_id")
     private Company company;
 
     @Column(nullable = false)
