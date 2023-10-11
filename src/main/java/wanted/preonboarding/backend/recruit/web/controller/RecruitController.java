@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wanted.preonboarding.backend.recruit.business.dto.response.RecruitWithAnotherResponse;
 import wanted.preonboarding.backend.recruit.business.service.RecruitService;
+import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListSearchResponse;
 import wanted.preonboarding.backend.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.recruit.web.dto.response.*;
 
@@ -46,5 +47,10 @@ public class RecruitController {
     public RecruitResponse getRecruitWithAnotherOfTheCompany(@PathVariable Long recruitId) {
         RecruitWithAnotherResponse recruitWithAnother = recruitService.getRecruitWithAnotherOfTheCompany(recruitId);
         return RecruitResponse.of(recruitWithAnother);
+    }
+
+    @GetMapping("/search")
+    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam String query, Pageable pageable) {
+        return recruitService.searchRecruitListBy(query, pageable);
     }
 }

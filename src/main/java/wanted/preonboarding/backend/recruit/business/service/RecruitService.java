@@ -12,7 +12,7 @@ import wanted.preonboarding.backend.company.business.service.CompanyService;
 import wanted.preonboarding.backend.recruit.business.dto.response.RecruitWithAnotherResponse;
 import wanted.preonboarding.backend.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.recruit.persistence.repository.RecruitRepository;
-import wanted.preonboarding.backend.recruit.web.dto.response.RecruitListResponse;
+import wanted.preonboarding.backend.recruit.web.dto.response.*;
 
 import java.util.List;
 
@@ -62,5 +62,10 @@ public class RecruitService {
                 .orElseThrow(() -> new BusinessException(RECRUIT_NOT_FOUND));
         List<Recruit> anotherRecruitList = recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(recruit.getCompany().getId(), recruitId);
         return new RecruitWithAnotherResponse(recruit, anotherRecruitList);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RecruitListSearchResponse> searchRecruitListBy(String query, Pageable pageable) {
+        return recruitRepository.findByQueryFetch(query, pageable);
     }
 }
