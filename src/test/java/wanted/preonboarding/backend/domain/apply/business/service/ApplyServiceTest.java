@@ -18,6 +18,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static wanted.preonboarding.backend.global.exception.ErrorCode.*;
+import static wanted.preonboarding.backend.utils.Fixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 class ApplyServiceTest {
@@ -41,11 +42,9 @@ class ApplyServiceTest {
     @Test
     void applyRecruit() {
         //given
-        User user = User.builder().id(1L).name("Ethan").careerYear(1).build();
-        Recruit recruit = Recruit.builder().id(1L).company(null)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
-        Apply apply = Apply.builder().id(1L).user(user).recruit(recruit).build();
+        User user = aUser().build();
+        Recruit recruit = aRecruit().build();
+        Apply apply = aApply().user(user).recruit(recruit).build();
         when(userService.getUser(anyLong())).thenReturn(user);
         when(recruitService.getRecruit(anyLong())).thenReturn(recruit);
         when(applyRepository.findByUserAndRecruit(anyLong(), anyLong())).thenReturn(Optional.empty());
@@ -59,9 +58,9 @@ class ApplyServiceTest {
         verify(recruitService, times(1)).getRecruit(anyLong());
         verify(applyRepository, times(1)).findByUserAndRecruit(anyLong(), anyLong());
         verify(applyRepository, times(1)).save(applyCaptor.capture());
-        assertThat(applyId).isEqualTo(1L);
-        assertThat(applyCaptor.getValue().getUser()).isEqualTo(user);
-        assertThat(applyCaptor.getValue().getRecruit()).isEqualTo(recruit);
+        assertThat(applyId).isEqualTo(apply.getId());
+        assertThat(applyCaptor.getValue().getUser()).isEqualTo(user); //생성된 지원내역과 해당 사용자와의 연관관계 검증
+        assertThat(applyCaptor.getValue().getRecruit()).isEqualTo(recruit); //생성된 지원내역과 해당 채용공고와의 연관관계 검증
     }
 
     @DisplayName("해당 채용공고에 지원 실패 테스트 - 해당 사용자 존재하지 않음")
@@ -102,11 +101,7 @@ class ApplyServiceTest {
     @Test
     void applyRecruitFailDoubleApply() {
         //given
-        User user = User.builder().id(1L).name("Ethan").careerYear(1).build();
-        Recruit recruit = Recruit.builder().id(1L).company(null)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
-        Apply apply = Apply.builder().id(1L).user(user).recruit(recruit).build();
+        Apply apply = aApply().build();
         when(applyRepository.findByUserAndRecruit(anyLong(), anyLong())).thenReturn(Optional.of(apply));
 
         //when, then
@@ -124,11 +119,7 @@ class ApplyServiceTest {
     @Test
     void isExistingApply() {
         //given
-        User user = User.builder().id(1L).name("Ethan").careerYear(1).build();
-        Recruit recruit = Recruit.builder().id(1L).company(null)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
-        Apply apply = Apply.builder().id(1L).user(user).recruit(recruit).build();
+        Apply apply = aApply().build();
         when(applyRepository.findByUserAndRecruit(anyLong(), anyLong())).thenReturn(Optional.of(apply));
 
         //when

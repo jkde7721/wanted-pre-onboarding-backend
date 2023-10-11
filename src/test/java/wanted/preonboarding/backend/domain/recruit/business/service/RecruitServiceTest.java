@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static wanted.preonboarding.backend.utils.Fixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 class RecruitServiceTest {
@@ -30,56 +31,55 @@ class RecruitServiceTest {
     @Mock
     RecruitRepository recruitRepository;
 
+    @Captor
+    ArgumentCaptor<Recruit> recruitCaptor;
+
     @DisplayName("채용공고 등록 성공 테스트")
     @Test
     void registerRecruit() {
         //given
-        Company company = Company.builder().id(1L).name("원티드랩").nation("한국").region("서울").build();
-        Recruit recruit = Recruit.builder().id(1L).company(company)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..").skills("Python").build();
+        Company company = aCompany().build();
+        Recruit recruit = aRecruit().company(company).build();
         when(companyService.getCompany(anyLong())).thenReturn(company);
         when(recruitRepository.save(any(Recruit.class))).thenReturn(recruit);
 
         //when
-        RecruitSaveRequest recruitSaveRequest = new RecruitSaveRequest("백엔드 주니어 개발자", 1000000L, "원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..", "Python");
+        RecruitSaveRequest recruitSaveRequest = new RecruitSaveRequest(recruit.getPosition(), recruit.getCompensationFee(), recruit.getDetails(), recruit.getSkills());
         Long recruitId = recruitService.registerRecruit(1L, recruitSaveRequest);
 
         //then
-        assertThat(recruitId).isEqualTo(recruit.getId());
         verify(companyService, times(1)).getCompany(anyLong());
-        verify(recruitRepository, times(1)).save(any(Recruit.class));
+        verify(recruitRepository, times(1)).save(recruitCaptor.capture());
+        assertThat(recruitId).isEqualTo(recruit.getId());
+        assertThat(recruitCaptor.getValue().getCompany()).isEqualTo(company); //생성된 채용공고와 해당 회사와의 연관관계 검증
     }
 
     @DisplayName("채용공고 수정 성공 테스트")
     @Test
     void modifyRecruit() {
         //given
-        Company company = Company.builder().id(1L).name("원티드랩").nation("한국").region("서울").build();
-        Recruit recruit = Recruit.builder().id(1L).company(company)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..").skills("Python").build();
+        Recruit recruit = aRecruit()
+                .position("백엔드 주니어 개발자")
+                .compensationFee(1000000L)
+                .skills("Python").build();
         when(recruitRepository.findById(anyLong())).thenReturn(Optional.of(recruit));
 
         //when
-        RecruitModifyRequest recruitModifyRequest = new RecruitModifyRequest("백엔드 시니어 개발자", 1500000L, "네이버에서 백엔드 시니어 개발자를 채용합니다.", "Spring");
+        RecruitModifyRequest recruitModifyRequest = new RecruitModifyRequest("백엔드 시니어 개발자", 1500000L, recruit.getDetails(), "Spring");
         recruitService.modifyRecruit(1L, recruitModifyRequest);
 
         //then
+        verify(recruitRepository, times(1)).findById(anyLong());
         assertThat(recruit)
                 .extracting("position", "compensationFee", "details", "skills")
                 .containsExactly(recruitModifyRequest.getPosition(), recruitModifyRequest.getCompensationFee(), recruitModifyRequest.getDetails(), recruitModifyRequest.getSkills());
-        verify(recruitRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("채용공고 삭제 성공 테스트")
     @Test
     void removeRecruit() {
         //given
-        Company company = Company.builder().id(1L).name("원티드랩").nation("한국").region("서울").build();
-        Recruit recruit = Recruit.builder().id(1L).company(company)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다. 자격요건은..").skills("Python").build();
+        Recruit recruit = aRecruit().build();
         when(recruitRepository.findById(anyLong())).thenReturn(Optional.of(recruit));
 
         //when
@@ -92,8 +92,10 @@ class RecruitServiceTest {
     @DisplayName("ID로 채용공고 조회 실패 테스트")
     @Test
     void getRecruitFail() {
+        //given
         when(recruitRepository.findById(anyLong())).thenReturn(Optional.empty());
 
+        //when, then
         assertThatThrownBy(() -> recruitService.getRecruit(1L))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
@@ -104,17 +106,10 @@ class RecruitServiceTest {
     @Test
     void getRecruitWithAnotherOfTheCompany() {
         //given
-        Company company = Company.builder().id(1L).name("원티드랩").nation("한국").region("서울").build();
-        Recruit recruit1 = Recruit.builder().id(1L).company(company)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
-        Recruit recruit2 = Recruit.builder().id(2L).company(company)
-                .position("백엔드 시니어 개발자").compensationFee(1500000L)
-                .details("원티드랩에서 백엔드 시니어 개발자를 채용합니다.").skills("Spring").build();
-        Recruit recruit3 = Recruit.builder().id(3L).company(company)
-                .position("프론트엔드 시니어 개발자").compensationFee(1500000L)
-                .details("네이버에서 프론트엔드 시니어 개발자를 채용합니다.").skills("React").build();
-        when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.of(recruit1));
+        Recruit recruit = aRecruit().build();
+        Recruit recruit2 = aRecruit2().build();
+        Recruit recruit3 = aRecruit3().build();
+        when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.of(recruit));
         when(recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(anyLong(), anyLong())).thenReturn(List.of(recruit2, recruit3));
 
         //when
@@ -123,7 +118,7 @@ class RecruitServiceTest {
         //then
         verify(recruitRepository, times(1)).findByIdFetch(anyLong());
         verify(recruitRepository, times(1)).findByCompanyNotEqualRecruitOrderByLatest(anyLong(), anyLong());
-        assertThat(recruitWithAnother.getRecruit()).isEqualTo(recruit1);
+        assertThat(recruitWithAnother.getRecruit()).isEqualTo(recruit);
         assertThat(recruitWithAnother.getAnotherRecruitList()).hasSize(2);
         assertThat(recruitWithAnother.getAnotherRecruitList()).containsExactly(recruit2, recruit3);
     }
@@ -132,10 +127,7 @@ class RecruitServiceTest {
     @Test
     void getRecruitWithAnotherOfTheCompanyWithZeroAnother() {
         //given
-        Company company = Company.builder().id(1L).name("원티드랩").nation("한국").region("서울").build();
-        Recruit recruit = Recruit.builder().id(1L).company(company)
-                .position("백엔드 주니어 개발자").compensationFee(1000000L)
-                .details("원티드랩에서 백엔드 주니어 개발자를 채용합니다.").skills("Python").build();
+        Recruit recruit = aRecruit().build();
         when(recruitRepository.findByIdFetch(anyLong())).thenReturn(Optional.of(recruit));
         when(recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(anyLong(), anyLong())).thenReturn(List.of());
 

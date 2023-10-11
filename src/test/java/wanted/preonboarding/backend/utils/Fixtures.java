@@ -57,16 +57,6 @@ public class Fixtures {
                 .skills("React");
     }
 
-    public static RecruitBuilder aRecruit4() {
-        return Recruit.builder()
-                .id(4L)
-                .company(aCompany2().build())
-                .position("프론트엔드 시니어 개발자")
-                .compensationFee(1500000L)
-                .details("네이버에서 React 개발자를 채용합니다.")
-                .skills("React");
-    }
-
     public static UserBuilder aUser() {
         return User.builder()
                 .id(1L)

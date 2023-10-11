@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static wanted.preonboarding.backend.utils.Fixtures.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -27,7 +28,7 @@ class UserServiceTest {
     @Test
     void getUser() {
         //given
-        User user = User.builder().id(1L).name("Ethan").careerYear(1).build();
+        User user = aUser().build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         //when
