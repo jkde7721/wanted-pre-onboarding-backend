@@ -1,10 +1,13 @@
 package wanted.preonboarding.backend.domain.recruit.persistence.repository;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
 import wanted.preonboarding.backend.domain.recruit.persistence.entity.Recruit;
 import wanted.preonboarding.backend.domain.recruit.web.dto.response.*;
 
@@ -31,7 +34,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
                 .join(recruit.company, company)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(recruit.createdDate.desc(), recruit.id.desc()) //생성일, 아이디 기준 내림차순 조회 (최신순)
+                .orderBy(latestOrder())
                 .fetch();
         Long total = queryFactory.select(recruit.count()).from(recruit).fetchOne();
         return new PageImpl<>(recruitList, pageable, total == null ? 0 : total);
@@ -49,7 +52,7 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
     public List<Recruit> findByCompanyNotEqualRecruitOrderByLatest(Long companyId, Long recruitId) {
         return queryFactory.selectFrom(recruit)
                 .where(recruit.company.id.eq(companyId), recruit.id.ne(recruitId))
-                .orderBy(recruit.createdDate.desc(), recruit.id.desc())
+                .orderBy(latestOrder())
                 .fetch();
     }
 
@@ -63,21 +66,29 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
                 ))
                 .from(recruit)
                 .join(recruit.company, company)
-                .where(recruit.position.containsIgnoreCase(query).or(
-                        recruit.skills.containsIgnoreCase(query)).or(
-                        company.name.containsIgnoreCase(query)))
+                .where(recruitLike(query))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(recruit.createdDate.desc(), recruit.id.desc())
+                .orderBy(latestOrder())
                 .fetch();
 
         Long total = queryFactory
                 .select(recruit.count()).from(recruit)
                 .join(recruit.company, company)
-                .where(recruit.position.containsIgnoreCase(query).or(
-                        recruit.skills.containsIgnoreCase(query)).or(
-                        company.name.containsIgnoreCase(query)))
+                .where(recruitLike(query))
                 .fetchOne();
         return new PageImpl<>(recruitList, pageable, total == null ? 0 : total);
+    }
+
+    private BooleanExpression recruitLike(String query) {
+        if (!StringUtils.hasText(query)) return null;
+        return recruit.position.containsIgnoreCase(query)
+                .or(recruit.skills.containsIgnoreCase(query))
+                .or(company.name.containsIgnoreCase(query));
+    }
+
+    //생성일, 아이디 기준 내림차순 조회 (최신순)
+    private OrderSpecifier<?>[] latestOrder() {
+        return new OrderSpecifier[]{recruit.createdDate.desc(), recruit.id.desc()};
     }
 }
