@@ -63,40 +63,6 @@ class ApplyServiceTest {
         assertThat(applyCaptor.getValue().getRecruit()).isEqualTo(recruit); //생성된 지원내역과 해당 채용공고와의 연관관계 검증
     }
 
-    @DisplayName("해당 채용공고에 지원 실패 테스트 - 해당 사용자 존재하지 않음")
-    @Test
-    void applyRecruitFailNoUser() {
-        //given
-        when(userService.getUser(anyLong())).thenThrow(new BusinessException(USER_NOT_FOUND));
-
-        //when, then
-        assertThatThrownBy(() -> applyService.applyRecruit(1L, 1L))
-                .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(USER_NOT_FOUND);
-        verify(userService, times(1)).getUser(anyLong());
-        verify(recruitService, times(0)).getRecruit(anyLong());
-        verify(applyRepository, times(0)).findByUserAndRecruit(anyLong(), anyLong());
-        verify(applyRepository, times(0)).save(any(Apply.class));
-    }
-
-    @DisplayName("해당 채용공고에 지원 실패 테스트 - 해당 채용공고 존재하지 않음")
-    @Test
-    void applyRecruitFailNoRecruit() {
-        //given
-        when(recruitService.getRecruit(anyLong())).thenThrow(new BusinessException(RECRUIT_NOT_FOUND));
-
-        //when, then
-        assertThatThrownBy(() -> applyService.applyRecruit(1L, 1L))
-                .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(RECRUIT_NOT_FOUND);
-        verify(userService, times(1)).getUser(anyLong());
-        verify(recruitService, times(1)).getRecruit(anyLong());
-        verify(applyRepository, times(0)).findByUserAndRecruit(anyLong(), anyLong());
-        verify(applyRepository, times(0)).save(any(Apply.class));
-    }
-
     @DisplayName("해당 채용공고에 지원 실패 테스트 - 해당 채용공고 지원내역 이미 존재")
     @Test
     void applyRecruitFailDoubleApply() {
@@ -115,7 +81,7 @@ class ApplyServiceTest {
         verify(applyRepository, times(0)).save(any(Apply.class));
     }
 
-    @DisplayName("해당 사용자가 해당 채용공고에 지원한 내역이 존재하는지 체크")
+    @DisplayName("해당 사용자가 해당 채용공고에 지원한 내역이 존재하는지 확인")
     @Test
     void isExistingApply() {
         //given
@@ -130,7 +96,7 @@ class ApplyServiceTest {
         assertThat(existingApply).isTrue();
     }
 
-    @DisplayName("해당 사용자가 해당 채용공고에 지원한 내역이 존재하지 않는지 체크")
+    @DisplayName("해당 사용자가 해당 채용공고에 지원한 내역이 존재하지 않는지 확인")
     @Test
     void isNotExistingApply() {
         //given

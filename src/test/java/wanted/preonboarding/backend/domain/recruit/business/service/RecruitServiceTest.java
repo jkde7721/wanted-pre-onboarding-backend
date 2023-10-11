@@ -89,6 +89,21 @@ class RecruitServiceTest {
         verify(recruitRepository, times(1)).delete(recruit);
     }
 
+    @DisplayName("ID로 채용공고 조회 성공 테스트")
+    @Test
+    void getRecruit() {
+        //given
+        Recruit recruit = aRecruit().build();
+        when(recruitRepository.findById(anyLong())).thenReturn(Optional.of(recruit));
+
+        //when
+        Recruit findedRecruit = recruitService.getRecruit(1L);
+
+        //then
+        verify(recruitRepository, times(1)).findById(anyLong());
+        assertThat(findedRecruit).isEqualTo(recruit);
+    }
+
     @DisplayName("ID로 채용공고 조회 실패 테스트")
     @Test
     void getRecruitFail() {
@@ -100,6 +115,7 @@ class RecruitServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(ErrorCode.RECRUIT_NOT_FOUND);
+        verify(recruitRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("특정 채용공고 상세 조회 성공 테스트 - 해당 회사의 다른 채용공고 1개 이상")
