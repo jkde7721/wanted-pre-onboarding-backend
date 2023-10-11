@@ -18,5 +18,5 @@ public class User extends BaseTimeEntity {
     private String name;
 
     @Column(nullable = false)
-    private Integer careerYear = 0;
+    private Integer careerYear;
 }
