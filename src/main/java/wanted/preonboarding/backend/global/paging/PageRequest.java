@@ -8,12 +8,14 @@ public class PageRequest {
     private int page = DEFAULT_PAGE;
     private int size = DEFAULT_SIZE;
 
+    //one-based page number, must be greater than 0.
     public void setPage(int page) {
-        this.page = page <= 0 ? DEFAULT_PAGE : page;
+        if (page > 0) this.page = page;
     }
 
+    //the size of the page, must be greater than 0.
     public void setSize(int size) {
-        this.size = Math.min(size, MAX_SIZE);
+        if (size > 0) this.size = Math.min(size, MAX_SIZE);
     }
 
     public org.springframework.data.domain.PageRequest of() {
