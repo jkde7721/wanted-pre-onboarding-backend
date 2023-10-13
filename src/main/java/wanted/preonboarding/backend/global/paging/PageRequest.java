@@ -1,5 +1,8 @@
 package wanted.preonboarding.backend.global.paging;
 
+import lombok.Getter;
+
+@Getter
 public class PageRequest {
 
     private static final int DEFAULT_PAGE = 1;
