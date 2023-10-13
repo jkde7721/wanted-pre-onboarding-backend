@@ -38,7 +38,7 @@ public class RecruitController {
 
     @GetMapping
     public PageResponse<RecruitListResponse> getRecruitList(PageRequest pageRequest) {
-        return recruitService.getRecruitList(pageRequest);
+        return recruitService.getRecruitList(pageRequest).toDto(RecruitListResponse::toDto);
     }
 
     @GetMapping("/{recruitId}")
@@ -49,6 +49,6 @@ public class RecruitController {
 
     @GetMapping("/search")
     public PageResponse<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, PageRequest pageRequest) {
-        return recruitService.searchRecruitListBy(query, pageRequest);
+        return recruitService.searchRecruitListBy(query, pageRequest).toDto(RecruitListSearchResponse::toDto);
     }
 }

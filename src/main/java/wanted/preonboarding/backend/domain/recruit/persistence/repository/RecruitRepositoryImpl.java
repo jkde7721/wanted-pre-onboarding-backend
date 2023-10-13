@@ -9,12 +9,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 import wanted.preonboarding.backend.domain.recruit.persistence.entity.Recruit;
-import wanted.preonboarding.backend.domain.recruit.web.dto.response.*;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.querydsl.core.types.Projections.*;
 import static wanted.preonboarding.backend.domain.company.persistence.entity.QCompany.company;
 import static wanted.preonboarding.backend.domain.recruit.persistence.entity.QRecruit.recruit;
 
@@ -24,13 +22,8 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<RecruitListResponse> findAllFetch(Pageable pageable) {
-        List<RecruitListResponse> recruitList = queryFactory
-                .select(constructor(RecruitListResponse.class,
-                        recruit.id, company.name, company.nation, company.region,
-                        recruit.position, recruit.compensationFee, recruit.skills
-                ))
-                .from(recruit)
+    public Page<Recruit> findAllFetch(Pageable pageable) {
+        List<Recruit> recruitList = queryFactory.selectFrom(recruit)
                 .join(recruit.company, company)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -57,14 +50,9 @@ public class RecruitRepositoryImpl implements RecruitRepositoryCustom {
     }
 
     @Override
-    public Page<RecruitListSearchResponse> findByQueryFetch(String query, Pageable pageable) {
+    public Page<Recruit> findByQueryFetch(String query, Pageable pageable) {
         //TODO: 쿼리 최적화 하기 (like '%query%' 쿼리 발생)
-        List<RecruitListSearchResponse> recruitList = queryFactory
-                .select(constructor(RecruitListSearchResponse.class,
-                        recruit.id, company.name, company.nation, company.region,
-                        recruit.position, recruit.compensationFee, recruit.skills
-                ))
-                .from(recruit)
+        List<Recruit> recruitList = queryFactory.selectFrom(recruit)
                 .join(recruit.company, company)
                 .where(recruitLike(query))
                 .offset(pageable.getOffset())

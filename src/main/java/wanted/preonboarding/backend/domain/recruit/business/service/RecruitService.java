@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import wanted.preonboarding.backend.domain.recruit.business.dto.request.*;
 import wanted.preonboarding.backend.domain.recruit.business.dto.response.*;
 import wanted.preonboarding.backend.domain.recruit.persistence.repository.RecruitRepository;
-import wanted.preonboarding.backend.domain.recruit.web.dto.response.*;
 import wanted.preonboarding.backend.global.exception.BusinessException;
 import wanted.preonboarding.backend.domain.company.persistence.entity.Company;
 import wanted.preonboarding.backend.domain.company.business.service.CompanyService;
@@ -51,7 +50,7 @@ public class RecruitService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<RecruitListResponse> getRecruitList(PageRequest pageRequest) {
+    public PageResponse<Recruit> getRecruitList(PageRequest pageRequest) {
         return new PageResponse<>(recruitRepository.findAllFetch(pageRequest.of()));
     }
 
@@ -64,7 +63,7 @@ public class RecruitService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<RecruitListSearchResponse> searchRecruitListBy(String query, PageRequest pageRequest) {
+    public PageResponse<Recruit> searchRecruitListBy(String query, PageRequest pageRequest) {
         return new PageResponse<>(recruitRepository.findByQueryFetch(query, pageRequest.of()));
     }
 }

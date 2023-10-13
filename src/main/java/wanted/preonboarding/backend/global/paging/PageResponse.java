@@ -1,11 +1,15 @@
 package wanted.preonboarding.backend.global.paging;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
+@AllArgsConstructor
 public class PageResponse<T> {
 
     private List<T> content;
@@ -28,5 +32,10 @@ public class PageResponse<T> {
         this.first = page.isFirst();
         this.last = page.isLast();
         this.empty = page.isEmpty();
+    }
+
+    public <R> PageResponse<R> toDto(Function<T, R> function) {
+        List<R> dtoContent = content.stream().map(function).collect(Collectors.toList());
+        return new PageResponse<>(dtoContent, pageNumber, pageSize, numberOfElements, totalPages, totalElements, first, last, empty);
     }
 }
