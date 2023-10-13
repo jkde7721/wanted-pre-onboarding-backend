@@ -1,7 +1,6 @@
 package wanted.preonboarding.backend.domain.recruit.web.controller;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import wanted.preonboarding.backend.domain.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.domain.recruit.business.dto.response.*;
 import wanted.preonboarding.backend.domain.recruit.business.service.RecruitService;
 import wanted.preonboarding.backend.domain.recruit.persistence.entity.Recruit;
+import wanted.preonboarding.backend.global.paging.*;
 
 import java.util.List;
 
@@ -80,7 +80,6 @@ class RecruitControllerTest {
                 .andDo(print());
     }
 
-    @Disabled("스프링 데이터 JPA의 Pagination 적용으로 테스트 실패 → 리팩토링하면서 수정할 예정")
     @DisplayName("채용공고 목록 조회 성공 테스트 - 채용공고 1개 이상")
     @Test
     void getRecruitList() throws Exception {
@@ -90,35 +89,49 @@ class RecruitControllerTest {
         Recruit recruit = aRecruit().company(company).build();
         Recruit recruit2 = aRecruit2().company(company).build();
         Recruit recruit3 = aRecruit3().company(company2).build();
-//        when(recruitService.getRecruitList()).thenReturn(List.of(recruit, recruit2, recruit3));
+        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(recruit, recruit2, recruit3), 1, 10, 3, 1, 3L, true, true, false);
+        when(recruitService.getRecruitList(any(PageRequest.class))).thenReturn(recruitListPage);
 
         //when, then
         mockMvc.perform(get("/recruits")
+                        .param("page", "1")
+                        .param("size", "10")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$[0].recruitId").value(recruit.getId()))
-                .andExpect(jsonPath("$[0].companyName").value(company.getName()))
-                .andExpect(jsonPath("$[0].nation").value(company.getNation()))
-                .andExpect(jsonPath("$[0].region").value(company.getRegion()))
-                .andExpect(jsonPath("$[0].position").value(recruit.getPosition()))
-                .andExpect(jsonPath("$[0].compensationFee").value(recruit.getCompensationFee()))
-                .andExpect(jsonPath("$[0].skills").value(recruit.getSkills()))
+                .andExpect(jsonPath("$.content", Matchers.hasSize(3)))
+                .andExpect(jsonPath("$.content[0].recruitId").value(recruit.getId()))
+                .andExpect(jsonPath("$.content[0].companyName").value(company.getName()))
+                .andExpect(jsonPath("$.content[0].nation").value(company.getNation()))
+                .andExpect(jsonPath("$.content[0].region").value(company.getRegion()))
+                .andExpect(jsonPath("$.content[0].position").value(recruit.getPosition()))
+                .andExpect(jsonPath("$.content[0].compensationFee").value(recruit.getCompensationFee()))
+                .andExpect(jsonPath("$.content[0].skills").value(recruit.getSkills()))
+
+                .andExpect(jsonPath("$.pageNumber").value(recruitListPage.getPageNumber()))
+                .andExpect(jsonPath("$.pageSize").value(recruitListPage.getPageSize()))
+                .andExpect(jsonPath("$.numberOfElements").value(recruitListPage.getNumberOfElements()))
+                .andExpect(jsonPath("$.totalPages").value(recruitListPage.getTotalPages()))
+                .andExpect(jsonPath("$.totalElements").value(recruitListPage.getTotalElements()))
+                .andExpect(jsonPath("$.first").value(recruitListPage.getFirst()))
+                .andExpect(jsonPath("$.last").value(recruitListPage.getLast()))
+                .andExpect(jsonPath("$.empty").value(recruitListPage.getEmpty()))
                 .andDo(print());
     }
 
-    @Disabled("스프링 데이터 JPA의 Pagination 적용으로 테스트 실패 → 리팩토링하면서 수정할 예정")
     @DisplayName("채용공고 목록 조회 성공 테스트 - 채용공고 0개")
     @Test
     void getRecruitListNone() throws Exception {
         //given
-//        when(recruitService.getRecruitList()).thenReturn(List.of());
+        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(), 1, 10, 0, 0, 0L, true, true, true);
+        when(recruitService.getRecruitList(any(PageRequest.class))).thenReturn(recruitListPage);
 
         //when, then
         mockMvc.perform(get("/recruits")
+                        .param("page", "1")
+                        .param("size", "10")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isEmpty())
+                .andExpect(jsonPath("$.content").isEmpty())
                 .andDo(print());
     }
 
@@ -172,6 +185,61 @@ class RecruitControllerTest {
                 .andExpect(jsonPath("$.skills").value(recruit.getSkills()))
                 .andExpect(jsonPath("$.details").value(recruit.getDetails()))
                 .andExpect(jsonPath("$.anotherRecruitList").isEmpty())
+                .andDo(print());
+    }
+
+    @DisplayName("채용공고 검색 성공 테스트 - 채용공고 1개 이상")
+    @Test
+    void searchRecruitListBy() throws Exception {
+        //given
+        Company company = aCompany().build();
+        Company company2 = aCompany2().build();
+        Recruit recruit = aRecruit().company(company).build();
+        Recruit recruit2 = aRecruit2().company(company).build();
+        Recruit recruit3 = aRecruit3().company(company2).build();
+        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(recruit, recruit2, recruit3), 1, 10, 3, 1, 3L, true, true, false);
+        when(recruitService.getRecruitList(any(PageRequest.class))).thenReturn(recruitListPage);
+
+        //when, then
+        mockMvc.perform(get("/recruits")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", Matchers.hasSize(3)))
+                .andExpect(jsonPath("$.content[0].recruitId").value(recruit.getId()))
+                .andExpect(jsonPath("$.content[0].companyName").value(company.getName()))
+                .andExpect(jsonPath("$.content[0].nation").value(company.getNation()))
+                .andExpect(jsonPath("$.content[0].region").value(company.getRegion()))
+                .andExpect(jsonPath("$.content[0].position").value(recruit.getPosition()))
+                .andExpect(jsonPath("$.content[0].compensationFee").value(recruit.getCompensationFee()))
+                .andExpect(jsonPath("$.content[0].skills").value(recruit.getSkills()))
+
+                .andExpect(jsonPath("$.pageNumber").value(recruitListPage.getPageNumber()))
+                .andExpect(jsonPath("$.pageSize").value(recruitListPage.getPageSize()))
+                .andExpect(jsonPath("$.numberOfElements").value(recruitListPage.getNumberOfElements()))
+                .andExpect(jsonPath("$.totalPages").value(recruitListPage.getTotalPages()))
+                .andExpect(jsonPath("$.totalElements").value(recruitListPage.getTotalElements()))
+                .andExpect(jsonPath("$.first").value(recruitListPage.getFirst()))
+                .andExpect(jsonPath("$.last").value(recruitListPage.getLast()))
+                .andExpect(jsonPath("$.empty").value(recruitListPage.getEmpty()))
+                .andDo(print());
+    }
+
+    @DisplayName("채용공고 검색 성공 테스트 - 채용공고 0개")
+    @Test
+    void searchRecruitListByNone() throws Exception {
+        //given
+        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(), 1, 10, 0, 0, 0L, true, true, true);
+        when(recruitService.getRecruitList(any(PageRequest.class))).thenReturn(recruitListPage);
+
+        //when, then
+        mockMvc.perform(get("/recruits")
+                        .param("page", "1")
+                        .param("size", "10")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty())
                 .andDo(print());
     }
 }
