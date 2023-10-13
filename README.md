@@ -73,7 +73,10 @@
 
 **요청**
 
-`GET /recruits?page=0&size=10`
+`GET /recruits?page=1&size=10`
+
+- `page`: 페이지 번호로, 시작 페이지 번호는 1
+- `size`: 한 페이지의 크기로, 기본값 10, 최대값 30
 
 **응답**
 
@@ -100,30 +103,13 @@
             "skills":"Django"
         }
     ],
-    "pageable": {
-        "pageNumber": 0,
-        "pageSize": 10,
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "paged": true,
-        "unpaged": false
-    },
-    "last": true,
-    "totalElements": 2,
-    "totalPages": 1,
-    "size": 10,
-    "number": 0,
-    "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-    },
-    "first": true,
+    "pageNumber": 1,
+    "pageSize": 10,
     "numberOfElements": 2,
+    "totalPages": 1,
+    "totalElements": 2,
+    "first": true,
+    "last": true,
     "empty": false
 }
 ```
@@ -135,13 +121,13 @@
 
 **요청**
 
-`GET /recruits/search?query=Spring&page=0&size=10`
+`GET /recruits/search?query=Spring&page=1&size=10`
 
 **응답**
 
 `200 OK`
 
-Example - 1) `/recruits/search?query=원티드&page=0&size=10`
+Example - 1) `/recruits/search?query=원티드&page=1&size=10`
 ```JSON
 {
     "content": [
@@ -164,35 +150,18 @@ Example - 1) `/recruits/search?query=원티드&page=0&size=10`
             "skills":"javascript"
         }
     ],
-    "pageable": {
-        "pageNumber": 0,
-        "pageSize": 10,
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "paged": true,
-        "unpaged": false
-    },
-    "last": true,
-    "totalElements": 2,
-    "totalPages": 1,
-    "size": 10,
-    "number": 0,
-    "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-    },
-    "first": true,
+    "pageNumber": 1,
+    "pageSize": 10,
     "numberOfElements": 2,
+    "totalPages": 1,
+    "totalElements": 2,
+    "first": true,
+    "last": true,
     "empty": false
 }
 ```
 
-Example - 2) `/recruits/search?query=Django&page=0&size=10`
+Example - 2) `/recruits/search?query=Django&page=1&size=10`
 ```JSON
 {
     "content": [
@@ -215,30 +184,13 @@ Example - 2) `/recruits/search?query=Django&page=0&size=10`
             "skills":"Python"
         }
     ],
-    "pageable": {
-        "pageNumber": 0,
-        "pageSize": 10,
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "paged": true,
-        "unpaged": false
-    },
-    "last": true,
-    "totalElements": 2,
-    "totalPages": 1,
-    "size": 10,
-    "number": 0,
-    "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-    },
-    "first": true,
+    "pageNumber": 1,
+    "pageSize": 10,
     "numberOfElements": 2,
+    "totalPages": 1,
+    "totalElements": 2,
+    "first": true,
+    "last": true, 
     "empty": false
 }
 ```
