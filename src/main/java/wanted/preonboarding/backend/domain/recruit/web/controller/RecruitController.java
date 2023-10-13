@@ -1,7 +1,6 @@
 package wanted.preonboarding.backend.domain.recruit.web.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +8,7 @@ import wanted.preonboarding.backend.domain.recruit.business.dto.response.Recruit
 import wanted.preonboarding.backend.domain.recruit.business.service.RecruitService;
 import wanted.preonboarding.backend.domain.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.domain.recruit.web.dto.response.*;
-import wanted.preonboarding.backend.global.paging.PageRequest;
+import wanted.preonboarding.backend.global.paging.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/recruits")
@@ -38,7 +37,7 @@ public class RecruitController {
     }
 
     @GetMapping
-    public Page<RecruitListResponse> getRecruitList(PageRequest pageRequest) {
+    public PageResponse<RecruitListResponse> getRecruitList(PageRequest pageRequest) {
         return recruitService.getRecruitList(pageRequest);
     }
 
@@ -49,7 +48,7 @@ public class RecruitController {
     }
 
     @GetMapping("/search")
-    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, PageRequest pageRequest) {
+    public PageResponse<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, PageRequest pageRequest) {
         return recruitService.searchRecruitListBy(query, pageRequest);
     }
 }
