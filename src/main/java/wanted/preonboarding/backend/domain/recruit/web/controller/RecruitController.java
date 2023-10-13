@@ -2,7 +2,6 @@ package wanted.preonboarding.backend.domain.recruit.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +9,7 @@ import wanted.preonboarding.backend.domain.recruit.business.dto.response.Recruit
 import wanted.preonboarding.backend.domain.recruit.business.service.RecruitService;
 import wanted.preonboarding.backend.domain.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.domain.recruit.web.dto.response.*;
+import wanted.preonboarding.backend.global.paging.PageRequest;
 
 @RequiredArgsConstructor
 @RequestMapping("/recruits")
@@ -38,8 +38,8 @@ public class RecruitController {
     }
 
     @GetMapping
-    public Page<RecruitListResponse> getRecruitList(Pageable pageable) {
-        return recruitService.getRecruitList(pageable);
+    public Page<RecruitListResponse> getRecruitList(PageRequest pageRequest) {
+        return recruitService.getRecruitList(pageRequest);
     }
 
     @GetMapping("/{recruitId}")
@@ -49,7 +49,7 @@ public class RecruitController {
     }
 
     @GetMapping("/search")
-    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, Pageable pageable) {
-        return recruitService.searchRecruitListBy(query, pageable);
+    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, PageRequest pageRequest) {
+        return recruitService.searchRecruitListBy(query, pageRequest);
     }
 }

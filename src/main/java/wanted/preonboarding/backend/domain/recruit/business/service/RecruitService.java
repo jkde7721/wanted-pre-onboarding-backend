@@ -2,7 +2,6 @@ package wanted.preonboarding.backend.domain.recruit.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wanted.preonboarding.backend.domain.recruit.business.dto.request.*;
@@ -13,6 +12,7 @@ import wanted.preonboarding.backend.global.exception.BusinessException;
 import wanted.preonboarding.backend.domain.company.persistence.entity.Company;
 import wanted.preonboarding.backend.domain.company.business.service.CompanyService;
 import wanted.preonboarding.backend.domain.recruit.persistence.entity.Recruit;
+import wanted.preonboarding.backend.global.paging.PageRequest;
 
 import java.util.List;
 
@@ -52,8 +52,8 @@ public class RecruitService {
     }
 
     @Transactional(readOnly = true)
-    public Page<RecruitListResponse> getRecruitList(Pageable pageable) {
-        return recruitRepository.findAllFetch(pageable);
+    public Page<RecruitListResponse> getRecruitList(PageRequest pageRequest) {
+        return recruitRepository.findAllFetch(pageRequest.of());
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +65,7 @@ public class RecruitService {
     }
 
     @Transactional(readOnly = true)
-    public Page<RecruitListSearchResponse> searchRecruitListBy(String query, Pageable pageable) {
-        return recruitRepository.findByQueryFetch(query, pageable);
+    public Page<RecruitListSearchResponse> searchRecruitListBy(String query, PageRequest pageRequest) {
+        return recruitRepository.findByQueryFetch(query, pageRequest.of());
     }
 }
