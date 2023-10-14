@@ -41,4 +41,23 @@ class ApplyControllerTest {
                 .andExpect(jsonPath("$.applyId").value(1L))
                 .andDo(print());
     }
+
+    @DisplayName("해당 채용공고에 지원 실패 테스트 - validation error 발생")
+    @Test
+    void applyRecruitFail() throws Exception {
+        //given
+        when(applyService.applyRecruit(anyLong(), anyLong())).thenReturn(1L);
+
+        //when, then
+        ApplyCreateRequest applyCreateRequest = ApplyCreateRequest.builder().userId(null).recruitId(null).build();
+        mockMvc.perform(post("/applies")
+                        .content(asJsonString(applyCreateRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.userId").exists())
+                .andExpect(jsonPath("$.recruitId").exists())
+                .andDo(print());
+        verify(applyService, times(0)).applyRecruit(anyLong(), anyLong());
+    }
 }
