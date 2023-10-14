@@ -1,5 +1,6 @@
 package wanted.preonboarding.backend.domain.recruit.web.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class RecruitController {
     private final RecruitService recruitService;
 
     @PostMapping
-    public ResponseEntity<RecruitCreateResponse> registerRecruit(@RequestBody RecruitCreateRequest recruitCreateRequest) {
+    public ResponseEntity<RecruitCreateResponse> registerRecruit(@Valid @RequestBody RecruitCreateRequest recruitCreateRequest) {
         Long recruitId = recruitService.registerRecruit(recruitCreateRequest.getCompanyId(), recruitCreateRequest.toServiceDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new RecruitCreateResponse(recruitId));
@@ -26,7 +27,7 @@ public class RecruitController {
 
     @PutMapping("/{recruitId}")
     public void modifyRecruit(@PathVariable Long recruitId,
-                              @RequestBody RecruitUpdateRequest recruitUpdateRequest) {
+                              @Valid @RequestBody RecruitUpdateRequest recruitUpdateRequest) {
         recruitService.modifyRecruit(recruitId, recruitUpdateRequest.toServiceDto());
     }
 

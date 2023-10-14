@@ -1,5 +1,6 @@
 package wanted.preonboarding.backend.domain.apply.web.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class ApplyController {
     private final ApplyService applyService;
 
     @PostMapping
-    public ResponseEntity<ApplyCreateResponse> applyRecruit(@RequestBody ApplyCreateRequest applyCreateRequest) {
+    public ResponseEntity<ApplyCreateResponse> applyRecruit(@Valid @RequestBody ApplyCreateRequest applyCreateRequest) {
         Long applyId = applyService.applyRecruit(applyCreateRequest.getUserId(), applyCreateRequest.getRecruitId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApplyCreateResponse(applyId));
