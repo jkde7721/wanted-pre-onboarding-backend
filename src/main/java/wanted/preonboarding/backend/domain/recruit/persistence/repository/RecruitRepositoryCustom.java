@@ -9,8 +9,7 @@ import java.util.Optional;
 
 public interface RecruitRepositoryCustom {
 
-    Page<Recruit> findAllFetch(Pageable pageable);
+    Page<Recruit> findAllBySearchFetch(String search, Pageable pageable);
     Optional<Recruit> findByIdFetch(Long recruitId);
     List<Recruit> findByCompanyNotEqualRecruitOrderByLatest(Long companyId, Long recruitId);
-    Page<Recruit> findByQueryFetch(String query, Pageable pageable);
 }
