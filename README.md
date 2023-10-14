@@ -1,7 +1,7 @@
 # 요구사항 분석 및 구현 과정
 
 ## DB 모델
-![Wanted Backend](https://github.com/jkde7721/wanted-pre-onboarding-backend/assets/65665065/d628ea5c-b769-4ce2-a3c1-7dcf3cc4b44a)
+![Wanted Backend](https://github.com/jkde7721/wanted-pre-onboarding-backend/assets/65665065/a9101e4f-395b-43d3-877e-d492facb55ab)
 
 <br/>
 
