@@ -9,16 +9,16 @@ import wanted.preonboarding.backend.domain.recruit.business.dto.request.RecruitM
 @AllArgsConstructor
 public class RecruitUpdateRequest {
 
-    @NotBlank(message = "채용공고의 채용포지션을 입력해주세요.")
+    @NotBlank(message = "{recruit.position.notBlank}")
     private String position;
 
-    @NotNull(message = "채용공고의 채용보상금을 입력해주세요.")
+    @NotNull(message = "{recruit.compensationFee.notNull}")
     private Long compensationFee;
 
-    @NotBlank(message = "채용공고의 채용내용을 입력해주세요.")
+    @NotBlank(message = "{recruit.details.notBlank}")
     private String details;
 
-    @NotBlank(message = "채용공고의 사용기술을 입력해주세요.")
+    @NotBlank(message = "{recruit.skills.notBlank}")
     private String skills;
 
     public RecruitModifyRequest toServiceDto() {
