@@ -124,7 +124,7 @@ class RecruitControllerTest {
         verify(recruitService, times(1)).removeRecruit(anyLong());
     }
 
-    @DisplayName("채용공고 목록 조회 성공 테스트 - 채용공고 1개 이상")
+    @DisplayName("채용공고 목록 조회 성공 테스트")
     @Test
     void getRecruitList() throws Exception {
         //given
@@ -134,7 +134,7 @@ class RecruitControllerTest {
         Recruit recruit2 = aRecruit2().company(company).build();
         Recruit recruit3 = aRecruit3().company(company2).build();
         PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(recruit, recruit2, recruit3), 1, 10, 3, 1, 3L, true, true, false);
-        when(recruitService.getRecruitList(any(PageRequest.class))).thenReturn(recruitListPage);
+        when(recruitService.getRecruitListBySearch(isNull(String.class), any(PageRequest.class))).thenReturn(recruitListPage);
 
         //when, then
         mockMvc.perform(get("/recruits")
@@ -160,25 +160,28 @@ class RecruitControllerTest {
                 .andExpect(jsonPath("$.last").value(recruitListPage.getLast()))
                 .andExpect(jsonPath("$.empty").value(recruitListPage.getEmpty()))
                 .andDo(print());
-        verify(recruitService, times(1)).getRecruitList(any(PageRequest.class));
+        verify(recruitService, times(1)).getRecruitListBySearch(isNull(String.class), any(PageRequest.class));
     }
 
-    @DisplayName("채용공고 목록 조회 성공 테스트 - 채용공고 0개")
+    @DisplayName("채용공고 목록 조회 성공 테스트 with 검색 기능")
     @Test
     void getRecruitListNone() throws Exception {
         //given
-        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(), 1, 10, 0, 0, 0L, true, true, true);
-        when(recruitService.getRecruitList(any(PageRequest.class))).thenReturn(recruitListPage);
+        Company company = aCompany().build();
+        Recruit recruit = aRecruit().company(company).build();
+        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(recruit), 1, 10, 1, 1, 1L, true, true, false);
+        when(recruitService.getRecruitListBySearch(anyString(), any(PageRequest.class))).thenReturn(recruitListPage);
 
         //when, then
         mockMvc.perform(get("/recruits")
+                        .param("search", "Spring")
                         .param("page", "1")
                         .param("size", "10")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.content", Matchers.hasSize(1)))
                 .andDo(print());
-        verify(recruitService, times(1)).getRecruitList(any(PageRequest.class));
+        verify(recruitService, times(1)).getRecruitListBySearch(anyString(), any(PageRequest.class));
     }
 
     @DisplayName("채용공고 상세 조회 성공 테스트 - 해당 회사의 다른 채용공고 1개 이상")
@@ -234,63 +237,5 @@ class RecruitControllerTest {
                 .andExpect(jsonPath("$.anotherRecruitList").isEmpty())
                 .andDo(print());
         verify(recruitService, times(1)).getRecruitWithAnotherOfTheCompany(anyLong());
-    }
-
-    @DisplayName("채용공고 검색 성공 테스트 - 채용공고 1개 이상")
-    @Test
-    void searchRecruitListBy() throws Exception {
-        //given
-        Company company = aCompany().build();
-        Company company2 = aCompany2().build();
-        Recruit recruit = aRecruit().company(company).build();
-        Recruit recruit2 = aRecruit2().company(company).build();
-        Recruit recruit3 = aRecruit3().company(company2).build();
-        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(recruit, recruit2, recruit3), 1, 10, 3, 1, 3L, true, true, false);
-        when(recruitService.searchRecruitListBy(isNull(String.class), any(PageRequest.class))).thenReturn(recruitListPage);
-
-        //when, then
-        mockMvc.perform(get("/recruits/search")
-                        .param("page", "1")
-                        .param("size", "10")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$.content[0].recruitId").value(recruit.getId()))
-                .andExpect(jsonPath("$.content[0].companyName").value(company.getName()))
-                .andExpect(jsonPath("$.content[0].nation").value(company.getNation()))
-                .andExpect(jsonPath("$.content[0].region").value(company.getRegion()))
-                .andExpect(jsonPath("$.content[0].position").value(recruit.getPosition()))
-                .andExpect(jsonPath("$.content[0].compensationFee").value(recruit.getCompensationFee()))
-                .andExpect(jsonPath("$.content[0].skills").value(recruit.getSkills()))
-
-                .andExpect(jsonPath("$.pageNumber").value(recruitListPage.getPageNumber()))
-                .andExpect(jsonPath("$.pageSize").value(recruitListPage.getPageSize()))
-                .andExpect(jsonPath("$.numberOfElements").value(recruitListPage.getNumberOfElements()))
-                .andExpect(jsonPath("$.totalPages").value(recruitListPage.getTotalPages()))
-                .andExpect(jsonPath("$.totalElements").value(recruitListPage.getTotalElements()))
-                .andExpect(jsonPath("$.first").value(recruitListPage.getFirst()))
-                .andExpect(jsonPath("$.last").value(recruitListPage.getLast()))
-                .andExpect(jsonPath("$.empty").value(recruitListPage.getEmpty()))
-                .andDo(print());
-        verify(recruitService, times(1)).searchRecruitListBy(isNull(String.class), any(PageRequest.class));
-    }
-
-    @DisplayName("채용공고 검색 성공 테스트 - 채용공고 0개")
-    @Test
-    void searchRecruitListByNone() throws Exception {
-        //given
-        PageResponse<Recruit> recruitListPage = new PageResponse<>(List.of(), 1, 10, 0, 0, 0L, true, true, true);
-        when(recruitService.searchRecruitListBy(anyString(), any(PageRequest.class))).thenReturn(recruitListPage);
-
-        //when, then
-        mockMvc.perform(get("/recruits/search")
-                        .param("query", "Spring")
-                        .param("page", "1")
-                        .param("size", "10")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isEmpty())
-                .andDo(print());
-        verify(recruitService, times(1)).searchRecruitListBy(anyString(), any(PageRequest.class));
     }
 }
