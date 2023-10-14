@@ -70,14 +70,21 @@
 
 ### 채용공고 목록 조회 
 > 현재까지 등록된 모든 채용공고를 최신순으로 조회합니다. (페이징 적용)
+> <br/>쿼리 파라미터로 검색 조건을 전달하여 채용공고를 검색할 수 있습니다.
 
 **요청**
 
-`GET /recruits?page=0&size=10`
+`GET /recruits?search=Spring&page=1&size=10`
+
+- `search`: 검색 조건
+- `page`: 페이지 번호로, 시작 페이지 번호는 1
+- `size`: 한 페이지의 크기로, 기본값 10, 최대값 30
 
 **응답**
 
 `200 OK`
+
+Example - 1) `/recruits?page=1&size=10` (전체 채용공고 조회)
 ```JSON
 {
     "content": [
@@ -100,48 +107,18 @@
             "skills":"Django"
         }
     ],
-    "pageable": {
-        "pageNumber": 0,
-        "pageSize": 10,
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "paged": true,
-        "unpaged": false
-    },
-    "last": true,
-    "totalElements": 2,
-    "totalPages": 1,
-    "size": 10,
-    "number": 0,
-    "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-    },
-    "first": true,
+    "pageNumber": 1,
+    "pageSize": 10,
     "numberOfElements": 2,
+    "totalPages": 1,
+    "totalElements": 2,
+    "first": true,
+    "last": true,
     "empty": false
 }
 ```
 
-<br/>
-
-### 채용공고 검색
-> 지정한 검색조건으로 현재까지 등록된 모든 채용공고를 최신순으로 조회합니다. 가능한 검색조건은 `회사명`, `채용포지션`, `사용기술`입니다. (페이징 적용) 
-
-**요청**
-
-`GET /recruits/search?query=Spring&page=0&size=10`
-
-**응답**
-
-`200 OK`
-
-Example - 1) `/recruits/search?query=원티드&page=0&size=10`
+Example - 2) `/recruits?search=원티드&page=1&size=10` (해당 검색 조건을 만족하는 채용공고만을 조회)
 ```JSON
 {
     "content": [
@@ -164,81 +141,13 @@ Example - 1) `/recruits/search?query=원티드&page=0&size=10`
             "skills":"javascript"
         }
     ],
-    "pageable": {
-        "pageNumber": 0,
-        "pageSize": 10,
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "paged": true,
-        "unpaged": false
-    },
-    "last": true,
-    "totalElements": 2,
-    "totalPages": 1,
-    "size": 10,
-    "number": 0,
-    "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-    },
-    "first": true,
+    "pageNumber": 1,
+    "pageSize": 10,
     "numberOfElements": 2,
-    "empty": false
-}
-```
-
-Example - 2) `/recruits/search?query=Django&page=0&size=10`
-```JSON
-{
-    "content": [
-        {
-            "recruitId": 3,
-            "companyName":"네이버",
-            "nation":"한국",
-            "region":"판교",
-            "position":"Django 백엔드 개발자",
-            "compensationFee":1000000,
-            "skills":"Django"
-        },
-        {
-            "recruitId": 4,
-            "companyName":"카카오",
-            "nation":"한국",
-            "region":"판교",
-            "position":"Django 백엔드 개발자",
-            "compensationFee":500000,
-            "skills":"Python"
-        }
-    ],
-    "pageable": {
-        "pageNumber": 0,
-        "pageSize": 10,
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "paged": true,
-        "unpaged": false
-    },
-    "last": true,
-    "totalElements": 2,
     "totalPages": 1,
-    "size": 10,
-    "number": 0,
-    "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-    },
+    "totalElements": 2,
     "first": true,
-    "numberOfElements": 2,
+    "last": true,
     "empty": false
 }
 ```

@@ -1,8 +1,7 @@
 package wanted.preonboarding.backend.domain.recruit.web.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +9,7 @@ import wanted.preonboarding.backend.domain.recruit.business.dto.response.Recruit
 import wanted.preonboarding.backend.domain.recruit.business.service.RecruitService;
 import wanted.preonboarding.backend.domain.recruit.web.dto.request.*;
 import wanted.preonboarding.backend.domain.recruit.web.dto.response.*;
+import wanted.preonboarding.backend.global.paging.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/recruits")
@@ -19,7 +19,7 @@ public class RecruitController {
     private final RecruitService recruitService;
 
     @PostMapping
-    public ResponseEntity<RecruitCreateResponse> registerRecruit(@RequestBody RecruitCreateRequest recruitCreateRequest) {
+    public ResponseEntity<RecruitCreateResponse> registerRecruit(@Valid @RequestBody RecruitCreateRequest recruitCreateRequest) {
         Long recruitId = recruitService.registerRecruit(recruitCreateRequest.getCompanyId(), recruitCreateRequest.toServiceDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new RecruitCreateResponse(recruitId));
@@ -27,7 +27,7 @@ public class RecruitController {
 
     @PutMapping("/{recruitId}")
     public void modifyRecruit(@PathVariable Long recruitId,
-                              @RequestBody RecruitUpdateRequest recruitUpdateRequest) {
+                              @Valid @RequestBody RecruitUpdateRequest recruitUpdateRequest) {
         recruitService.modifyRecruit(recruitId, recruitUpdateRequest.toServiceDto());
     }
 
@@ -38,18 +38,13 @@ public class RecruitController {
     }
 
     @GetMapping
-    public Page<RecruitListResponse> getRecruitList(Pageable pageable) {
-        return recruitService.getRecruitList(pageable);
+    public PageResponse<RecruitListResponse> getRecruitListBySearch(@RequestParam(required = false) String search, PageRequest pageRequest) {
+        return recruitService.getRecruitListBySearch(search, pageRequest).toDto(RecruitListResponse::toDto);
     }
 
     @GetMapping("/{recruitId}")
     public RecruitResponse getRecruitWithAnotherOfTheCompany(@PathVariable Long recruitId) {
         RecruitWithAnotherResponse recruitWithAnother = recruitService.getRecruitWithAnotherOfTheCompany(recruitId);
         return RecruitResponse.of(recruitWithAnother);
-    }
-
-    @GetMapping("/search")
-    public Page<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, Pageable pageable) {
-        return recruitService.searchRecruitListBy(query, pageable);
     }
 }
