@@ -55,6 +55,29 @@ class RecruitControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("채용공고 등록 실패 테스트 - validation error 발생")
+    @Test
+    void registerRecruitFail() throws Exception {
+        //given
+        when(recruitService.registerRecruit(anyLong(), any(RecruitSaveRequest.class))).thenReturn(1L);
+
+        //when, then
+        RecruitCreateRequest recruitCreateRequest = RecruitCreateRequest.builder()
+                .companyId(null).position(null).compensationFee(null).details("").skills("  ").build();
+        mockMvc.perform(post("/recruits")
+                        .content(asJsonString(recruitCreateRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.companyId").exists())
+                .andExpect(jsonPath("$.position").exists())
+                .andExpect(jsonPath("$.compensationFee").exists())
+                .andExpect(jsonPath("$.details").exists())
+                .andExpect(jsonPath("$.skills").exists())
+                .andDo(print());
+        verify(recruitService, times(0)).registerRecruit(anyLong(), any(RecruitSaveRequest.class));
+    }
+
     @DisplayName("채용공고 수정 성공 테스트")
     @Test
     void modifyRecruit() throws Exception {
@@ -69,6 +92,24 @@ class RecruitControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    @DisplayName("채용공고 수정 실패 테스트 - validation error 발생")
+    @Test
+    void modifyRecruitFail() throws Exception {
+        RecruitUpdateRequest recruitUpdateRequest = RecruitUpdateRequest.builder()
+                .position(null).compensationFee(null).details("").skills("  ").build();
+        mockMvc.perform(put("/recruits/{recruitId}", 1L)
+                        .content(asJsonString(recruitUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.position").exists())
+                .andExpect(jsonPath("$.compensationFee").exists())
+                .andExpect(jsonPath("$.details").exists())
+                .andExpect(jsonPath("$.skills").exists())
+                .andDo(print());
+        verify(recruitService, times(0)).modifyRecruit(anyLong(), any(RecruitModifyRequest.class));
     }
 
     @DisplayName("채용공고 삭제 성공 테스트")
