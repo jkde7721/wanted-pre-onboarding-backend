@@ -50,8 +50,8 @@ public class RecruitService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<Recruit> getRecruitList(PageRequest pageRequest) {
-        return new PageResponse<>(recruitRepository.findAllFetch(pageRequest.of()));
+    public PageResponse<Recruit> getRecruitListBySearch(String search, PageRequest pageRequest) {
+        return new PageResponse<>(recruitRepository.findAllBySearchFetch(search, pageRequest.of()));
     }
 
     @Transactional(readOnly = true)
@@ -60,10 +60,5 @@ public class RecruitService {
                 .orElseThrow(() -> new BusinessException(RECRUIT_NOT_FOUND));
         List<Recruit> anotherRecruitList = recruitRepository.findByCompanyNotEqualRecruitOrderByLatest(recruit.getCompany().getId(), recruitId);
         return new RecruitWithAnotherResponse(recruit, anotherRecruitList);
-    }
-
-    @Transactional(readOnly = true)
-    public PageResponse<Recruit> searchRecruitListBy(String query, PageRequest pageRequest) {
-        return new PageResponse<>(recruitRepository.findByQueryFetch(query, pageRequest.of()));
     }
 }
