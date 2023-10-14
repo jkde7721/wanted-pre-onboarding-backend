@@ -40,6 +40,7 @@ class ApplyControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.applyId").value(1L))
                 .andDo(print());
+        verify(applyService, times(1)).applyRecruit(anyLong(), anyLong());
     }
 
     @DisplayName("해당 채용공고에 지원 실패 테스트 - validation error 발생")
