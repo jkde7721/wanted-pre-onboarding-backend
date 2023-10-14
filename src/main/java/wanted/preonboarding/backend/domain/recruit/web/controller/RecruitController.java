@@ -38,18 +38,13 @@ public class RecruitController {
     }
 
     @GetMapping
-    public PageResponse<RecruitListResponse> getRecruitList(PageRequest pageRequest) {
-        return recruitService.getRecruitList(pageRequest).toDto(RecruitListResponse::toDto);
+    public PageResponse<RecruitListResponse> getRecruitListBySearch(@RequestParam(required = false) String search, PageRequest pageRequest) {
+        return recruitService.getRecruitListBySearch(search, pageRequest).toDto(RecruitListResponse::toDto);
     }
 
     @GetMapping("/{recruitId}")
     public RecruitResponse getRecruitWithAnotherOfTheCompany(@PathVariable Long recruitId) {
         RecruitWithAnotherResponse recruitWithAnother = recruitService.getRecruitWithAnotherOfTheCompany(recruitId);
         return RecruitResponse.of(recruitWithAnother);
-    }
-
-    @GetMapping("/search")
-    public PageResponse<RecruitListSearchResponse> searchRecruitListBy(@RequestParam(required = false) String query, PageRequest pageRequest) {
-        return recruitService.searchRecruitListBy(query, pageRequest).toDto(RecruitListSearchResponse::toDto);
     }
 }
